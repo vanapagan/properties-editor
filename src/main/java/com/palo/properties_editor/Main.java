@@ -2,6 +2,7 @@ package com.palo.properties_editor;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,7 +34,7 @@ public class Main extends Application {
 			for (String filename : arr) {
 				prop = new Properties();
 				input = getClass().getResourceAsStream(filename);
-				prop.load(input);
+				prop.load(new InputStreamReader(input, StandardCharsets.UTF_8));
 				for (Object k : prop.keySet()) {
 					String key = (String) k;
 					String value = prop.getProperty(key);
