@@ -21,13 +21,13 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
 public class Main extends Application {
-	
+
 	@Override
 	public void start(Stage primaryStage) {
 
 		Properties prop = null;
 		InputStream input = null;
-		ItemVault vault = new ItemVault();
+		Map<String, Item> itemsMap = new HashMap<String, Item>();
 
 		String[] arr = { "translations_en.properties", "translations_fi.properties", "translations_et.properties" };
 		try {
@@ -38,10 +38,10 @@ public class Main extends Application {
 				for (Object k : prop.keySet()) {
 					String key = (String) k;
 					String value = prop.getProperty(key);
-					Item item = vault.getItemsMap().get(key);
+					Item item = itemsMap.get(key);
 					if (item == null) {
-						item = new Item(key);
-						vault.addItem(key, item);
+						item = new Item();
+						itemsMap.put(key, item);
 					}
 					item.addNewValue(filename, value);
 				}
@@ -60,8 +60,7 @@ public class Main extends Application {
 				}
 			}
 		}
-
-		Map<String, Item> itemsMap = new HashMap<String, Item>(vault.getItemsMap());
+		
 		ObservableList<Map.Entry<String, Item>> items = FXCollections.observableArrayList(itemsMap.entrySet());
 		TableView<Map.Entry<String, Item>> table = new TableView<Entry<String, Item>>(items);
 
@@ -76,6 +75,7 @@ public class Main extends Application {
 						return new SimpleStringProperty(e.getValue().getKey());
 					}
 				});
+		keyColumn.setSortType(TableColumn.SortType.ASCENDING);
 		table.getColumns().add(keyColumn);
 
 		for (final String filename : arr) {
@@ -90,6 +90,7 @@ public class Main extends Application {
 					});
 			table.getColumns().add(languageColumn);
 		}
+		table.getSortOrder().add(keyColumn);
 
 		try {
 			Scene scene = new Scene(table, 600, 400);
@@ -103,4 +104,5 @@ public class Main extends Application {
 	public static void main(String[] args) {
 		launch(args);
 	}
+	
 }

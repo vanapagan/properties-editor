@@ -3,13 +3,13 @@ package com.palo.properties_editor;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Item implements Comparable<Item> {
+public class Item {
 
-	private String key;
+	//private String key;
 	private Map<String, String> valuesMap;
 	
-	public Item(String key) {
-		this.key = key;
+	public Item() { //String key) {
+		//this.key = key;
 		this.valuesMap = new HashMap<String, String>();
 	}
 	
@@ -21,12 +21,12 @@ public class Item implements Comparable<Item> {
 		return valuesMap.get(key);
 	}
 	
-	public int compareTo(Item anotherItem) {
-		return anotherItem.getKey().compareTo(this.key);
-	}
+	//public int compareTo(Item anotherItem) {
+	//	return this.key.compareTo(anotherItem.getKey());
+	//}
 
-	public String getKey() {
-		return key;
-	}
+	//public String getKey() {
+	//	return key;
+	//}
 
 }
