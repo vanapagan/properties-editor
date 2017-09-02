@@ -25,8 +25,16 @@ public class Item implements Comparable<Item> {
 		return key;
 	}
 
+	public void setKey(String key) {
+		this.key = key;
+	}
+
 	public int compareTo(Item anotherItem) {
 		return anotherItem.getKey().compareTo(this.key);
+	}
+
+	public Map<String, String> getValuesMap() {
+		return valuesMap;
 	}
 
 }

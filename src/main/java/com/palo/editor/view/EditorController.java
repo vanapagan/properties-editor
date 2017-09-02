@@ -7,8 +7,11 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellEditEvent;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.util.Callback;
@@ -36,6 +39,15 @@ public class EditorController {
 						return new SimpleStringProperty(e.getValue().getKey());
 					}
 				});
+		keyColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+		keyColumn.setOnEditCommit(
+				new EventHandler<CellEditEvent<Item, String>>() {
+					@Override
+					public void handle(CellEditEvent<Item, String> t) {
+						t.getTableView().getItems().get(t.getTablePosition().getRow()).setKey(t.getNewValue());
+					}
+				}
+				);
 		itemTable.getColumns().add(keyColumn);
 
 		for (final String filename : MainApp.arr) {
@@ -47,11 +59,23 @@ public class EditorController {
 							return new SimpleStringProperty(p.getValue().fetchValue(filename));
 						}
 					});
+			languageColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+			languageColumn.setOnEditCommit(
+					new EventHandler<CellEditEvent<Item, String>> () {
+						@Override
+						public void handle(CellEditEvent<Item, String> t) {
+							t.getTableView().getItems().get(t.getTablePosition().getRow()).getValuesMap().put(t.getTableColumn().getText(), t.getNewValue());
+						}
+						
+					});
 			itemTable.getColumns().add(languageColumn);
 		}
 
 		keyColumn.setSortType(TableColumn.SortType.ASCENDING);
 		itemTable.getSortOrder().add(keyColumn);
+		
+		itemTable.setEditable(true);
+		
 	}
 
 	public void setMainApp(MainApp mainApp) {
