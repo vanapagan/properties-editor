@@ -9,23 +9,25 @@ import java.util.Map;
 import java.util.Properties;
 
 import com.palo.editor.model.Item;
+import com.palo.editor.view.EditorController;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.TableView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 public class MainApp extends Application {
+	
+	public static String[] arr = { "translations_en.properties", "translations_fi.properties", "translations_et.properties" };
 
 	private Stage primaryStage;
 	private BorderPane rootLayout;
 	
-	private ObservableList<Item> items;
+	public ObservableList<Item> items;
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -36,7 +38,6 @@ public class MainApp extends Application {
 		InputStream input = null;
 		Map<String, Item> map = new HashMap<String, Item>();
 
-		String[] arr = { "translations_en.properties", "translations_fi.properties", "translations_et.properties" };
 		try {
 			for (String filename : arr) {
 				prop = new Properties();
@@ -69,13 +70,10 @@ public class MainApp extends Application {
 		}
 		
 		items = FXCollections.observableArrayList(map.values());
-		TableView<Item> table = new TableView<Item>(items);
-		
-		table.setEditable(true);
 		
 		initRootLayout();
-		
 		showEditor();
+		
 	}
 
 	public void initRootLayout() {
@@ -99,6 +97,10 @@ public class MainApp extends Application {
             AnchorPane personOverview = (AnchorPane) loader.load();
 
             rootLayout.setCenter(personOverview);
+            
+            EditorController controller = loader.getController();
+            controller.setMainApp(this);
+            
         } catch (IOException e) {
             e.printStackTrace();
         }

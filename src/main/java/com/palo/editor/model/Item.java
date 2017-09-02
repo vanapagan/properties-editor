@@ -3,7 +3,7 @@ package com.palo.editor.model;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Item {
+public class Item implements Comparable<Item> {
 
 	private String key;
 	private Map<String, String> valuesMap;
@@ -20,13 +20,13 @@ public class Item {
 	public String fetchValue(String key) {
 		return valuesMap.get(key);
 	}
-	
-	public int compareTo(Item anotherItem) {
-		return this.key.compareTo(anotherItem.getKey());
-	}
 
 	public String getKey() {
 		return key;
+	}
+
+	public int compareTo(Item anotherItem) {
+		return anotherItem.getKey().compareTo(this.key);
 	}
 
 }
