@@ -6,9 +6,12 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
+import java.util.Vector;
 
 import com.palo.editor.MainApp;
 import com.palo.editor.model.Item;
@@ -121,6 +124,10 @@ public class EditorController {
 
 	}
 
+	private void handleAddNewItem() {
+
+	}
+
 	@FXML
 	private void handleSaveButton() {
 		ObservableList<Item> items = itemTable.getItems();
@@ -134,7 +141,7 @@ public class EditorController {
 				}
 				map.put(key, value);
 			}
-			Properties properties = new Properties();
+			SortedProperties properties = new SortedProperties();
 			properties.putAll(map);
 
 			URL url = getClass().getResource("../" + s);
@@ -158,6 +165,23 @@ public class EditorController {
 
 			}
 		}
+	}
+
+}
+
+class SortedProperties extends Properties {
+	
+	private static final long serialVersionUID = 3838181836191268646L;
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public Enumeration keys() {
+		Enumeration keysEnum = super.keys();
+		Vector<String> keyList = new Vector<String>();
+		while (keysEnum.hasMoreElements()) {
+			keyList.add((String) keysEnum.nextElement());
+		}
+		Collections.sort(keyList);
+		return keyList.elements();
 	}
 
 }
