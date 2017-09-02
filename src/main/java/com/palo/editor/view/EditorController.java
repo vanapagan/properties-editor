@@ -162,7 +162,6 @@ public class EditorController {
 						e.printStackTrace();
 					}
 				}
-
 			}
 		}
 	}
