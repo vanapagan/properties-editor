@@ -45,8 +45,6 @@ public class ItemDialogController {
 	
 	private boolean okClicked = false;
 	
-	private boolean newItem = false;
-	
 	@FXML
     private void initialize() {
 		langCol.setCellValueFactory(
@@ -110,8 +108,6 @@ public class ItemDialogController {
 				}
 				item.getValuesMap().put(s.replace(".properties", ""), value);
 			}
-			
-			// TODO implement adding new item
 			
 			okClicked = true;
 			dialogStage.close();

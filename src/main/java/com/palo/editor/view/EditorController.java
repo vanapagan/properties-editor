@@ -1,6 +1,5 @@
 package com.palo.editor.view;
 
-import java.awt.ItemSelectable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -142,7 +141,16 @@ public class EditorController {
 
 	@FXML
 	private void handleEditItem() {
-
+		Item selectedItem = itemTable.getSelectionModel().getSelectedItem();
+		if (selectedItem != null) {
+			mainApp.showItemDialog(selectedItem);
+		}
+	}
+	
+	@FXML
+	private void handleDeleteItem() {
+		int selectedIndex = itemTable.getSelectionModel().getSelectedIndex();
+		mainApp.getItems().remove(selectedIndex);
 	}
 
 	@FXML

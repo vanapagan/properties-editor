@@ -114,20 +114,17 @@ public class MainApp extends Application {
 	        loader.setLocation(MainApp.class.getResource("view/ItemDialog.fxml"));
 	        AnchorPane page = (AnchorPane) loader.load();
 
-	        // Create the dialog Stage.
 	        Stage dialogStage = new Stage();
 	        dialogStage.setTitle("Edit Item");
 	        dialogStage.initModality(Modality.WINDOW_MODAL);
 	        dialogStage.initOwner(primaryStage);
 	        Scene scene = new Scene(page);
 	        dialogStage.setScene(scene);
-
-	        // Set the person into the controller.
+	        
 	        ItemDialogController controller = loader.getController();
 	        controller.setDialogStage(dialogStage);
 	        controller.setItem(item);
 
-	        // Show the dialog and wait until the user closes it
 	        dialogStage.showAndWait();
 
 	        return controller.isOkClicked();
