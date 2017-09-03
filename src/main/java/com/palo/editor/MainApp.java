@@ -108,14 +108,14 @@ public class MainApp extends Application {
         }
 	}
 	
-	public boolean showItemDialog(Item item) {
+	public boolean showItemDialog(Item item, String activityTitle) {
 	    try {
 	        FXMLLoader loader = new FXMLLoader();
 	        loader.setLocation(MainApp.class.getResource("view/ItemDialog.fxml"));
 	        AnchorPane page = (AnchorPane) loader.load();
 
 	        Stage dialogStage = new Stage();
-	        dialogStage.setTitle("Edit Item");
+	        dialogStage.setTitle(activityTitle + " " + "Key");
 	        dialogStage.initModality(Modality.WINDOW_MODAL);
 	        dialogStage.initOwner(primaryStage);
 	        Scene scene = new Scene(page);

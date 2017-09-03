@@ -38,6 +38,15 @@ public class EditorController {
 
 	@FXML
 	private Button saveButton;
+	
+	@FXML
+	private Button newButton;
+	
+	@FXML
+	private Button editButton;
+	
+	@FXML
+	private Button deleteButton;
 
 	@FXML
 	private TableView<Item> itemTable;
@@ -89,11 +98,24 @@ public class EditorController {
 			});
 			itemTable.getColumns().add(languageColumn);
 		}
+		
+		itemTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+		    if (newSelection != null) {
+		    	editButton.setDisable(false);
+				deleteButton.setDisable(false);
+		    } else {
+		    	editButton.setDisable(true);
+				deleteButton.setDisable(true);
+		    }
+		});
 
 		keyColumn.setSortType(TableColumn.SortType.ASCENDING);
 		itemTable.getSortOrder().add(keyColumn);
 
 		itemTable.setEditable(true);
+		
+		editButton.setDisable(true);
+		deleteButton.setDisable(true);
 
 	}
 
@@ -133,7 +155,7 @@ public class EditorController {
 		for (String s : MainApp.arr) {
 			item.getValuesMap().put(s.replace(".properties", ""), "");
 		}
-		boolean okClicked = mainApp.showItemDialog(item);
+		boolean okClicked = mainApp.showItemDialog(item, "New");
 		if (okClicked) {
 			mainApp.getItems().add(item);
 		}
@@ -143,7 +165,7 @@ public class EditorController {
 	private void handleEditItem() {
 		Item selectedItem = itemTable.getSelectionModel().getSelectedItem();
 		if (selectedItem != null) {
-			mainApp.showItemDialog(selectedItem);
+			mainApp.showItemDialog(selectedItem, "Edit");
 		}
 	}
 	

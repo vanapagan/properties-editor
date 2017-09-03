@@ -13,10 +13,10 @@
           <AnchorPane maxHeight="-Infinity" minHeight="-Infinity" prefHeight="30.0">
                <children>
                   <TextField fx:id="filterField" layoutX="397.0" layoutY="3.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="24.0" prefWidth="160.0" AnchorPane.bottomAnchor="3.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="3.0" />
-                  <Button layoutX="8.0" layoutY="5.0" maxWidth="-Infinity" mnemonicParsing="false" onAction="#handleAddNewItem" prefHeight="24.0" prefWidth="73.0" text="New Key" AnchorPane.bottomAnchor="3.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="3.0" />
+                  <Button fx:id="newButton" layoutX="8.0" layoutY="5.0" maxWidth="-Infinity" mnemonicParsing="false" onAction="#handleAddNewItem" prefHeight="24.0" prefWidth="73.0" text="New Key" AnchorPane.bottomAnchor="3.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="3.0" />
                   <Button fx:id="saveButton" layoutX="269.0" layoutY="3.0" maxHeight="-Infinity" minHeight="-Infinity" mnemonicParsing="false" onAction="#handleSaveButton" prefHeight="24.0" text="Save" />
-                  <Button layoutX="93.0" layoutY="3.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" mnemonicParsing="false" onAction="#handleEditItem" prefHeight="24.0" prefWidth="73.0" text="Edit Key" />
-                  <Button layoutX="176.0" layoutY="3.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" mnemonicParsing="false" onAction="#handleDeleteItem" prefHeight="24.0" prefWidth="73.0" text="Delete Key" />
+                  <Button fx:id="editButton" layoutX="93.0" layoutY="3.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" mnemonicParsing="false" onAction="#handleEditItem" prefHeight="24.0" prefWidth="73.0" text="Edit Key" />
+                  <Button fx:id="deleteButton" layoutX="176.0" layoutY="3.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" mnemonicParsing="false" onAction="#handleDeleteItem" prefHeight="24.0" prefWidth="73.0" text="Delete Key" />
                </children>
             </AnchorPane>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="320.0" prefWidth="598.0">
