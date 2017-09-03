@@ -108,6 +108,7 @@ public class EditorController {
 				deleteButton.setDisable(true);
 		    }
 		});
+		
 
 		keyColumn.setSortType(TableColumn.SortType.ASCENDING);
 		itemTable.getSortOrder().add(keyColumn);
@@ -171,8 +172,8 @@ public class EditorController {
 	
 	@FXML
 	private void handleDeleteItem() {
-		int selectedIndex = itemTable.getSelectionModel().getSelectedIndex();
-		mainApp.getItems().remove(selectedIndex);
+		Item selectedItem = itemTable.getSelectionModel().getSelectedItem();
+		mainApp.getItems().remove(selectedItem);
 	}
 
 	@FXML
