@@ -24,6 +24,7 @@ import javafx.collections.transformation.SortedList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.cell.TextFieldTableCell;
@@ -109,6 +110,7 @@ public class EditorController {
 		    }
 		});
 		
+		itemTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
 		keyColumn.setSortType(TableColumn.SortType.ASCENDING);
 		itemTable.getSortOrder().add(keyColumn);
@@ -156,7 +158,7 @@ public class EditorController {
 		for (String s : MainApp.arr) {
 			item.getValuesMap().put(s.replace(".properties", ""), "");
 		}
-		boolean okClicked = mainApp.showItemDialog(item, "New");
+		boolean okClicked = mainApp.showItemDialog(item, "New", "Add");
 		if (okClicked) {
 			mainApp.getItems().add(item);
 		}
@@ -164,16 +166,45 @@ public class EditorController {
 
 	@FXML
 	private void handleEditItem() {
+		/*
 		Item selectedItem = itemTable.getSelectionModel().getSelectedItem();
 		if (selectedItem != null) {
 			mainApp.showItemDialog(selectedItem, "Edit");
+		}*/
+		ObservableList<Item> selectedItemsList = itemTable.getSelectionModel().getSelectedItems();
+		if (selectedItemsList != null && !selectedItemsList.isEmpty()) {
+			Item item = selectedItemsList.get(0);
+			String title = "Edit";
+			String button = "Edit";
+			if (selectedItemsList.size() > 1) {
+				item = new Item("MULTIPLE");
+				title = "Edit Multiple";
+				
+				for (String s : MainApp.arr) {
+					item.getValuesMap().put(s.replace(".properties", ""), "");
+				}
+			}
+			for (String s : MainApp.arr) {
+				item.getValuesMap().put(s.replace(".properties", ""), "");
+			}
+			boolean okClicked = mainApp.showItemDialog(item, title, button);
+			if (okClicked) {
+				for (Item selectedItem : selectedItemsList) {
+					for (String s : MainApp.arr) {
+						selectedItem.getValuesMap().put(s.replace(".properties", ""), item.getValuesMap().get(s.replace(".properties", "")));
+					}
+				}
+			}
 		}
+		itemTable.refresh();
 	}
 	
 	@FXML
 	private void handleDeleteItem() {
-		Item selectedItem = itemTable.getSelectionModel().getSelectedItem();
-		mainApp.getItems().remove(selectedItem);
+		ObservableList<Item> selectedItemsList = itemTable.getSelectionModel().getSelectedItems();
+		for (Item selectedItem : selectedItemsList) {
+			mainApp.getItems().remove(selectedItem);
+		}
 	}
 
 	@FXML

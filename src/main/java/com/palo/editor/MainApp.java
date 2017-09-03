@@ -108,7 +108,7 @@ public class MainApp extends Application {
         }
 	}
 	
-	public boolean showItemDialog(Item item, String activityTitle) {
+	public boolean showItemDialog(Item item, String activityTitle, String button) {
 	    try {
 	        FXMLLoader loader = new FXMLLoader();
 	        loader.setLocation(MainApp.class.getResource("view/ItemDialog.fxml"));
@@ -123,7 +123,7 @@ public class MainApp extends Application {
 	        
 	        ItemDialogController controller = loader.getController();
 	        controller.setDialogStage(dialogStage);
-	        controller.setItem(item);
+	        controller.setItem(item, button);
 
 	        dialogStage.showAndWait();
 

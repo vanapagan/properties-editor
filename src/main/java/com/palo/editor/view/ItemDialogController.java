@@ -75,11 +75,15 @@ public class ItemDialogController {
 		this.dialogStage = dialogStage;
 	}
 	
-	public void setItem(Item item) {
+	public void setItem(Item item, String buttonText) {
 		
 		this.item = item;
 		
+		if ("MULTIPLE".equals(item.getKey())) {
+			keyField.setDisable(true);
+		}
 		keyField.setText(item.getKey());
+		confirmButton.setText(buttonText);
 		
 		ObservableList<Translation> translations = FXCollections.observableArrayList();
 		for (String s : MainApp.arr) {
@@ -122,10 +126,10 @@ public class ItemDialogController {
     }
 	
 	private boolean isInputValid() {
-		if (keyField.getText().isEmpty()) {
-			return false;
+		if (keyField.isDisabled() || !keyField.getText().isEmpty()) {
+			return true;
 		}
-		return true;
+		return false;
 	}
 	
 }
