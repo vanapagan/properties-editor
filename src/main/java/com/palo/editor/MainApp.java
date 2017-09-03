@@ -10,6 +10,7 @@ import java.util.Properties;
 
 import com.palo.editor.model.Item;
 import com.palo.editor.view.EditorController;
+import com.palo.editor.view.ItemDialogController;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -18,6 +19,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class MainApp extends Application {
@@ -51,7 +53,7 @@ public class MainApp extends Application {
 						item = new Item(key);
 						map.put(key, item);
 					}
-					item.addNewValue(filename, value);
+					item.addNewValue(filename.replace(".properties", ""), value);
 				}
 				if (input != null) {
 					input.close();
@@ -104,6 +106,35 @@ public class MainApp extends Application {
         } catch (IOException e) {
             e.printStackTrace();
         }
+	}
+	
+	public boolean showItemDialog(Item item) {
+	    try {
+	        FXMLLoader loader = new FXMLLoader();
+	        loader.setLocation(MainApp.class.getResource("view/ItemDialog.fxml"));
+	        AnchorPane page = (AnchorPane) loader.load();
+
+	        // Create the dialog Stage.
+	        Stage dialogStage = new Stage();
+	        dialogStage.setTitle("Edit Item");
+	        dialogStage.initModality(Modality.WINDOW_MODAL);
+	        dialogStage.initOwner(primaryStage);
+	        Scene scene = new Scene(page);
+	        dialogStage.setScene(scene);
+
+	        // Set the person into the controller.
+	        ItemDialogController controller = loader.getController();
+	        controller.setDialogStage(dialogStage);
+	        controller.setItem(item);
+
+	        // Show the dialog and wait until the user closes it
+	        dialogStage.showAndWait();
+
+	        return controller.isOkClicked();
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	        return false;
+	    }
 	}
 
 	public Stage getPrimaryStage() {

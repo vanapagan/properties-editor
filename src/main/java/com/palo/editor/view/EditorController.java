@@ -1,5 +1,6 @@
 package com.palo.editor.view;
 
+import java.awt.ItemSelectable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -43,6 +44,8 @@ public class EditorController {
 	private TableView<Item> itemTable;
 
 	private MainApp mainApp;
+	
+	SortedList<Item> sortedData;
 
 	public EditorController() {
 	}
@@ -72,7 +75,8 @@ public class EditorController {
 			languageColumn.setCellValueFactory(
 					new Callback<TableColumn.CellDataFeatures<Item, String>, ObservableValue<String>>() {
 						public ObservableValue<String> call(TableColumn.CellDataFeatures<Item, String> p) {
-							return new SimpleStringProperty(p.getValue().fetchValue(filename));
+							return new SimpleStringProperty(
+									p.getValue().fetchValue(filename.replace(".properties", "")));
 						}
 					});
 			languageColumn.setCellFactory(TextFieldTableCell.forTableColumn());
@@ -80,7 +84,7 @@ public class EditorController {
 				@Override
 				public void handle(CellEditEvent<Item, String> t) {
 					t.getTableView().getItems().get(t.getTablePosition().getRow()).getValuesMap()
-							.put(t.getTableColumn().getText() + ".properties", t.getNewValue());
+							.put(t.getTableColumn().getText(), t.getNewValue());
 				}
 
 			});
@@ -118,13 +122,26 @@ public class EditorController {
 
 		});
 
-		SortedList<Item> sortedData = new SortedList<>(filteredData);
+		sortedData = new SortedList<>(filteredData);
 		sortedData.comparatorProperty().bind(itemTable.comparatorProperty());
 		itemTable.setItems(sortedData);
 
 	}
 
+	@FXML
 	private void handleAddNewItem() {
+		Item item = new Item("");
+		for (String s : MainApp.arr) {
+			item.getValuesMap().put(s.replace(".properties", ""), "");
+		}
+		boolean okClicked = mainApp.showItemDialog(item);
+		if (okClicked) {
+			mainApp.getItems().add(item);
+		}
+	}
+
+	@FXML
+	private void handleEditItem() {
 
 	}
 
@@ -135,7 +152,7 @@ public class EditorController {
 			Map<String, String> map = new TreeMap<>();
 			for (Item item : items) {
 				String key = item.getKey();
-				String value = item.fetchValue(s);
+				String value = item.fetchValue(s.replace(".properties", ""));
 				if (value == null) {
 					value = "";
 				}
@@ -169,7 +186,7 @@ public class EditorController {
 }
 
 class SortedProperties extends Properties {
-	
+
 	private static final long serialVersionUID = 3838181836191268646L;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
