@@ -3,6 +3,7 @@ package com.palo.editor.view;
 import com.palo.editor.MainApp;
 import com.palo.editor.model.Item;
 import com.palo.editor.model.Translation;
+import com.palo.util.PreferencesSingleton;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
@@ -66,8 +67,8 @@ public class ItemDialogController {
 				t.getTableView().getItems().get(t.getTablePosition().getRow()).setValue(t.getNewValue());
 			}
 		});
-		for (String langName : MainApp.arr) {
-			translationsTable.getItems().add(new Translation(langName.replace(".properties", ""), ""));
+		for (String langName : PreferencesSingleton.getInstace().getTranslationsList()) {
+			translationsTable.getItems().add(new Translation(langName, ""));
 		}
     }
 	
@@ -86,8 +87,8 @@ public class ItemDialogController {
 		confirmButton.setText(buttonText);
 		
 		ObservableList<Translation> translations = FXCollections.observableArrayList();
-		for (String s : MainApp.arr) {
-			translations.add(new Translation(s.replace(".properties", ""), item.getValuesMap().get(s.replace(".properties", ""))));
+		for (String s : PreferencesSingleton.getInstace().getTranslationsList()) {
+			translations.add(new Translation(s, item.getValuesMap().get(s)));
 		}
 		
 		translationsTable.setItems(translations);
@@ -103,14 +104,14 @@ public class ItemDialogController {
 			
 			item.setKey(keyField.getText());
 			
-			for (String s : MainApp.arr) {
+			for (String s : PreferencesSingleton.getInstace().getTranslationsList()) {
 				String value = null;
 				for (Translation t : translationsTable.getItems()) {
-					if (t.getLanguage().equals(s.replace(".properties", ""))) {
+					if (t.getLanguage().equals(s)) {
 						value = t.getValue();
 					}
 				}
-				item.getValuesMap().put(s.replace(".properties", ""), value);
+				item.getValuesMap().put(s, value);
 			}
 			
 			okClicked = true;

@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,6 +17,7 @@ import java.util.Properties;
 import com.palo.editor.model.Item;
 import com.palo.editor.view.EditorController;
 import com.palo.editor.view.ItemDialogController;
+import com.palo.util.PreferencesSingleton;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -24,16 +26,15 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.shape.Path;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class MainApp extends Application {
 
 	private static final String location = "C:/Temp/translations";
-	public static String[] arr = { "translations_en.properties", "translations_fi.properties",
-			"translations_et.properties" };
-	public static List<String> translationsList = new ArrayList<>();
+	//public static String[] arr = { "translations_en.properties", "translations_fi.properties",
+	//		"translations_et.properties" };
+	//public static List<String> translationsList = new ArrayList<>();
 
 	private Stage primaryStage;
 	private BorderPane rootLayout;
@@ -48,7 +49,8 @@ public class MainApp extends Application {
 		Map<String, Item> map = new HashMap<String, Item>();
 
 		// TODO load properies files
-		java.nio.file.Path path = Paths.get(location);
+		PreferencesSingleton.getInstace().setLocation(location);
+		Path path = Paths.get(PreferencesSingleton.getInstace().getLocation());
 		try {
 			Files.list(path).filter(f -> f.toString().endsWith(".properties")).forEach(filepath -> {
 				Properties prop = new Properties();
@@ -60,7 +62,7 @@ public class MainApp extends Application {
 					e.printStackTrace();
 				}
 				String translation = filepath.getFileName().toString().replace(".properties", "");
-				translationsList.add(translation);
+				PreferencesSingleton.getInstace().getTranslationsList().add(translation);
 				for (Object k : prop.keySet()) {
 					String key = (String) k;
 					String value = prop.getProperty(key);
@@ -152,10 +154,6 @@ public class MainApp extends Application {
 
 	public ObservableList<Item> getItems() {
 		return items;
-	}
-	
-	public List<String> getTranslationsList() {
-		return translationsList;
 	}
 
 	public static void main(String[] args) {

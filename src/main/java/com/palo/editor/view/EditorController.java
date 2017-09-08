@@ -15,6 +15,7 @@ import java.util.Vector;
 
 import com.palo.editor.MainApp;
 import com.palo.editor.model.Item;
+import com.palo.util.PreferencesSingleton;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
@@ -78,7 +79,7 @@ public class EditorController {
 		});
 		itemTable.getColumns().add(keyColumn);
 
-		for (String filename : MainApp.translationsList) {
+		for (String filename : PreferencesSingleton.getInstace().getTranslationsList()) {
 			TableColumn<Item, String> languageColumn = new TableColumn<Item, String>(filename);
 			languageColumn.setCellValueFactory(
 					new Callback<TableColumn.CellDataFeatures<Item, String>, ObservableValue<String>>() {
@@ -154,7 +155,7 @@ public class EditorController {
 	@FXML
 	private void handleAddNewItem() {
 		Item item = new Item("");
-		for (String s : mainApp.getTranslationsList()) {
+		for (String s : PreferencesSingleton.getInstace().getTranslationsList()) {
 			item.getValuesMap().put(s, "");
 		}
 		boolean okClicked = mainApp.showItemDialog(item, "New", "Add");
@@ -179,17 +180,17 @@ public class EditorController {
 				item = new Item("MULTIPLE");
 				title = "Edit Multiple";
 				
-				for (String s : mainApp.getTranslationsList()) {
+				for (String s : PreferencesSingleton.getInstace().getTranslationsList()) {
 					item.getValuesMap().put(s, "");
 				}
 			}
-			for (String s : mainApp.getTranslationsList()) {
+			for (String s : PreferencesSingleton.getInstace().getTranslationsList()) {
 				item.getValuesMap().put(s, "");
 			}
 			boolean okClicked = mainApp.showItemDialog(item, title, button);
 			if (okClicked) {
 				for (Item selectedItem : selectedItemsList) {
-					for (String s : mainApp.getTranslationsList()) {
+					for (String s : PreferencesSingleton.getInstace().getTranslationsList()) {
 						selectedItem.getValuesMap().put(s, item.getValuesMap().get(s.replace(".properties", "")));
 					}
 				}
@@ -209,7 +210,7 @@ public class EditorController {
 	@FXML
 	private void handleSaveButton() {
 		ObservableList<Item> items = itemTable.getItems();
-		for (String s : mainApp.getTranslationsList()) {
+		for (String s : PreferencesSingleton.getInstace().getTranslationsList()) {
 			Map<String, String> map = new TreeMap<>();
 			for (Item item : items) {
 				String key = item.getKey();
@@ -221,9 +222,7 @@ public class EditorController {
 			}
 			SortedProperties properties = new SortedProperties();
 			properties.putAll(map);
-
-			URL url = getClass().getResource("../" + s);
-			File file = new File(url.getFile());
+			File file = new File(PreferencesSingleton.getInstace().getLocation() + s + ".properties");
 
 			OutputStreamWriter output = null;
 
