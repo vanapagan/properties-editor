@@ -78,14 +78,13 @@ public class EditorController {
 		});
 		itemTable.getColumns().add(keyColumn);
 
-		for (final String filename : MainApp.arr) {
-			TableColumn<Item, String> languageColumn = new TableColumn<Item, String>(
-					filename.replace(".properties", ""));
+		for (String filename : MainApp.translationsList) {
+			TableColumn<Item, String> languageColumn = new TableColumn<Item, String>(filename);
 			languageColumn.setCellValueFactory(
 					new Callback<TableColumn.CellDataFeatures<Item, String>, ObservableValue<String>>() {
 						public ObservableValue<String> call(TableColumn.CellDataFeatures<Item, String> p) {
 							return new SimpleStringProperty(
-									p.getValue().fetchValue(filename.replace(".properties", "")));
+									p.getValue().fetchValue(filename));
 						}
 					});
 			languageColumn.setCellFactory(TextFieldTableCell.forTableColumn());
@@ -155,8 +154,8 @@ public class EditorController {
 	@FXML
 	private void handleAddNewItem() {
 		Item item = new Item("");
-		for (String s : MainApp.arr) {
-			item.getValuesMap().put(s.replace(".properties", ""), "");
+		for (String s : mainApp.getTranslationsList()) {
+			item.getValuesMap().put(s, "");
 		}
 		boolean okClicked = mainApp.showItemDialog(item, "New", "Add");
 		if (okClicked) {
@@ -180,18 +179,18 @@ public class EditorController {
 				item = new Item("MULTIPLE");
 				title = "Edit Multiple";
 				
-				for (String s : MainApp.arr) {
-					item.getValuesMap().put(s.replace(".properties", ""), "");
+				for (String s : mainApp.getTranslationsList()) {
+					item.getValuesMap().put(s, "");
 				}
 			}
-			for (String s : MainApp.arr) {
-				item.getValuesMap().put(s.replace(".properties", ""), "");
+			for (String s : mainApp.getTranslationsList()) {
+				item.getValuesMap().put(s, "");
 			}
 			boolean okClicked = mainApp.showItemDialog(item, title, button);
 			if (okClicked) {
 				for (Item selectedItem : selectedItemsList) {
-					for (String s : MainApp.arr) {
-						selectedItem.getValuesMap().put(s.replace(".properties", ""), item.getValuesMap().get(s.replace(".properties", "")));
+					for (String s : mainApp.getTranslationsList()) {
+						selectedItem.getValuesMap().put(s, item.getValuesMap().get(s.replace(".properties", "")));
 					}
 				}
 			}
@@ -210,11 +209,11 @@ public class EditorController {
 	@FXML
 	private void handleSaveButton() {
 		ObservableList<Item> items = itemTable.getItems();
-		for (String s : MainApp.arr) {
+		for (String s : mainApp.getTranslationsList()) {
 			Map<String, String> map = new TreeMap<>();
 			for (Item item : items) {
 				String key = item.getKey();
-				String value = item.fetchValue(s.replace(".properties", ""));
+				String value = item.fetchValue(s);
 				if (value == null) {
 					value = "";
 				}
