@@ -5,8 +5,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
@@ -19,6 +21,7 @@ import com.palo.util.PreferencesSingleton;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
@@ -158,7 +161,7 @@ public class EditorController {
 		for (String s : PreferencesSingleton.getInstace().getTranslationsList()) {
 			item.getValuesMap().put(s, "");
 		}
-		boolean okClicked = mainApp.showItemDialog(item, "New", "Add");
+		boolean okClicked = mainApp.showItemDialog(item, "New", "Add", FXCollections.observableArrayList());
 		if (okClicked) {
 			mainApp.getItems().add(item);
 		}
@@ -171,6 +174,10 @@ public class EditorController {
 			Item item = selectedItemsList.get(0);
 			String title = "Edit";
 			String button = "Edit";
+			List<String> keyList = new ArrayList<>();
+			selectedItemsList.stream().forEach(selItem -> {
+				keyList.add(selItem.getKey());
+			});
 			if (selectedItemsList.size() > 1) {
 				item = new Item("MULTIPLE");
 				title = "Edit Multiple";
@@ -178,7 +185,7 @@ public class EditorController {
 					item.getValuesMap().put(s, "");
 				}
 			}
-			boolean okClicked = mainApp.showItemDialog(item, title, button);
+			boolean okClicked = mainApp.showItemDialog(item, title, button, selectedItemsList);
 			if (okClicked) {
 				for (Item selectedItem : selectedItemsList) {
 					for (String s : PreferencesSingleton.getInstace().getTranslationsList()) {

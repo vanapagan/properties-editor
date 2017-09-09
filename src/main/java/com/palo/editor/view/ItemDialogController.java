@@ -1,5 +1,7 @@
 package com.palo.editor.view;
 
+import java.util.List;
+
 import com.palo.editor.model.Item;
 import com.palo.editor.model.Translation;
 import com.palo.util.PreferencesSingleton;
@@ -25,6 +27,12 @@ public class ItemDialogController {
 	private TextField keyField;
 	
 	@FXML
+	private TableColumn<Item, String> keyCol;
+	
+	@FXML
+	private TableView<Item> keysTable;
+	
+	@FXML
 	private TableView<Translation> translationsTable;
 	
 	@FXML
@@ -47,6 +55,19 @@ public class ItemDialogController {
 	
 	@FXML
     private void initialize() {
+		keyCol.setCellValueFactory(
+				new Callback<TableColumn.CellDataFeatures<Item, String>, ObservableValue<String>>() {
+					public ObservableValue<String> call(TableColumn.CellDataFeatures<Item, String> e) {
+						return new SimpleStringProperty(e.getValue().getKey());
+					}
+				});
+		keyCol.setCellFactory(TextFieldTableCell.forTableColumn());
+		keyCol.setOnEditCommit(new EventHandler<CellEditEvent<Item, String>>() {
+			@Override
+			public void handle(CellEditEvent<Item, String> t) {
+				t.getTableView().getItems().get(t.getTablePosition().getRow()).setKey(t.getNewValue());
+			}
+		});
 		langCol.setCellValueFactory(
 				new Callback<TableColumn.CellDataFeatures<Translation, String>, ObservableValue<String>>() {
 					public ObservableValue<String> call(TableColumn.CellDataFeatures<Translation, String> e) {
@@ -75,14 +96,15 @@ public class ItemDialogController {
 		this.dialogStage = dialogStage;
 	}
 	
-	public void setItem(Item item, String buttonText) {
+	public void setItem(Item item, String buttonText, ObservableList<Item> selectedItemsList) {
 		
 		this.item = item;
 		
 		if ("MULTIPLE".equals(item.getKey())) {
-			keyField.setDisable(true);
+			// keyField.setDisable(true);
+			keyCol.setText("Keys");
 		}
-		keyField.setText(item.getKey());
+		// keyField.setText(item.getKey());
 		confirmButton.setText(buttonText);
 		
 		ObservableList<Translation> translations = FXCollections.observableArrayList();

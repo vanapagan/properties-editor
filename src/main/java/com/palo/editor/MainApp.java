@@ -2,6 +2,8 @@ package com.palo.editor;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -9,12 +11,15 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+
+import com.palo.editor.model.FileHolder;
 import com.palo.editor.model.Item;
 import com.palo.editor.view.EditorController;
 import com.palo.editor.view.ItemDialogController;
@@ -28,17 +33,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class MainApp extends Application {
-
-	private static final String location = "C:/Temp/translations";
-	// public static String[] arr = { "translations_en.properties",
-	// "translations_fi.properties",
-	// "translations_et.properties" };
-	// public static List<String> translationsList = new ArrayList<>();
 
 	private Stage primaryStage;
 	private BorderPane rootLayout;
@@ -50,15 +48,34 @@ public class MainApp extends Application {
 		this.primaryStage = primaryStage;
 		this.primaryStage.setTitle("Properties Editor");
 
-		File prefFile = new File("C:\\temp\\preferences.properties");
+		File prefFile = new File("C:\\temp\\preferences.json");
+
 		if (!prefFile.exists()) {
 			showOpenDialog();
+		} else {
+			// TODO populate PreferencesSingleton with 'preferences.properties'
+			// content
+			JSONTokener tokener;
+			try {
+				tokener = new JSONTokener(new FileReader("C:\\temp\\preferences.json"));
+				JSONArray jsonArr = new JSONArray(tokener);
+				for (int i = 0; i < jsonArr.length(); i++) {
+					JSONObject jsonObj = (JSONObject) jsonArr.get(i);
+					if (jsonObj != null) {
+						String filename = jsonObj.getString("filename");
+						String path = jsonObj.getString("path");
+						PreferencesSingleton.getInstace().getFileHolders().add(new FileHolder(filename, path));
+					}
+				}
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 		Map<String, Item> map = new HashMap<String, Item>();
 
-		// TODO load properies files
-
+		// TODO load the properies files
 		PreferencesSingleton.getInstace().getFileHolders().stream().forEach(fileholder -> {
 			Properties prop = new Properties();
 			InputStream input = null;
@@ -127,7 +144,8 @@ public class MainApp extends Application {
 		}
 	}
 
-	public boolean showItemDialog(Item item, String activityTitle, String button) {
+	public boolean showItemDialog(Item item, String activityTitle, String button,
+			ObservableList<Item> selectedItemsList) {
 		try {
 			FXMLLoader loader = new FXMLLoader();
 			loader.setLocation(MainApp.class.getResource("view/ItemDialog.fxml"));
@@ -142,7 +160,7 @@ public class MainApp extends Application {
 
 			ItemDialogController controller = loader.getController();
 			controller.setDialogStage(dialogStage);
-			controller.setItem(item, button);
+			controller.setItem(item, button, selectedItemsList);
 
 			dialogStage.showAndWait();
 
