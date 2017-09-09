@@ -1,8 +1,6 @@
 package com.palo.editor;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,6 +22,7 @@ import com.palo.editor.model.Item;
 import com.palo.editor.view.EditorController;
 import com.palo.editor.view.ItemDialogController;
 import com.palo.editor.view.OpenDialogController;
+import com.palo.util.Constants;
 import com.palo.util.PreferencesSingleton;
 
 import javafx.application.Application;
@@ -44,38 +43,37 @@ public class MainApp extends Application {
 	public ObservableList<Item> items;
 
 	@Override
-	public void start(Stage primaryStage) {
+	public void start(Stage primaryStage) throws IOException {
 		this.primaryStage = primaryStage;
-		this.primaryStage.setTitle("Properties Editor");
+		this.primaryStage.setTitle(Constants.APP_TITLE);
 
-		File prefFile = new File("C:\\temp\\preferences.json");
+		checkForExistingPreferences();
+		items = FXCollections.observableArrayList(mapProperties().values());
+		initRootLayout();
+		showEditor();
+	}
 
+	private void checkForExistingPreferences() throws IOException {
+		File prefFile = new File(Constants.PREFERENCES_FILE_LOCATION);
 		if (!prefFile.exists()) {
 			showOpenDialog();
 		} else {
-			// TODO populate PreferencesSingleton with 'preferences.properties'
-			// content
 			JSONTokener tokener;
-			try {
-				tokener = new JSONTokener(new FileReader("C:\\temp\\preferences.json"));
-				JSONArray jsonArr = new JSONArray(tokener);
-				for (int i = 0; i < jsonArr.length(); i++) {
-					JSONObject jsonObj = (JSONObject) jsonArr.get(i);
-					if (jsonObj != null) {
-						String filename = jsonObj.getString("filename");
-						String path = jsonObj.getString("path");
-						PreferencesSingleton.getInstace().getFileHolders().add(new FileHolder(filename, path));
-					}
+			tokener = new JSONTokener(new FileReader(Constants.PREFERENCES_FILE_LOCATION));
+			JSONArray jsonArr = new JSONArray(tokener);
+			for (int i = 0; i < jsonArr.length(); i++) {
+				JSONObject jsonObj = (JSONObject) jsonArr.get(i);
+				if (jsonObj != null) {
+					String filename = jsonObj.getString(Constants.PREFERENCES_FILENAME);
+					String path = jsonObj.getString(Constants.PREFERENCES_PATH);
+					PreferencesSingleton.getInstace().getFileHolders().add(new FileHolder(filename, path));
 				}
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 		}
+	}
 
+	private Map<String, Item> mapProperties() {
 		Map<String, Item> map = new HashMap<String, Item>();
-
-		// TODO load the properies files
 		PreferencesSingleton.getInstace().getFileHolders().stream().forEach(fileholder -> {
 			Properties prop = new Properties();
 			InputStream input = null;
@@ -106,93 +104,66 @@ public class MainApp extends Application {
 				}
 			}
 		});
-
-		items = FXCollections.observableArrayList(map.values());
-
-		initRootLayout();
-		showEditor();
-
+		return map;
 	}
 
-	public void initRootLayout() {
-		try {
-			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(MainApp.class.getResource("view/RootLayout.fxml"));
-			rootLayout = loader.load();
-
-			Scene scene = new Scene(rootLayout);
-			primaryStage.setScene(scene);
-			primaryStage.show();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	public void initRootLayout() throws IOException {
+		FXMLLoader loader = new FXMLLoader();
+		loader.setLocation(MainApp.class.getResource(Constants.VIEW_ROOT_LAYOUT));
+		rootLayout = loader.load();
+		Scene scene = new Scene(rootLayout);
+		primaryStage.setScene(scene);
+		primaryStage.show();
 	}
 
-	private void showEditor() {
-		try {
-			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(MainApp.class.getResource("view/Editor.fxml"));
-			AnchorPane personOverview = (AnchorPane) loader.load();
-
-			rootLayout.setCenter(personOverview);
-
-			EditorController controller = loader.getController();
-			controller.setMainApp(this);
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	private void showEditor() throws IOException {
+		FXMLLoader loader = new FXMLLoader();
+		loader.setLocation(MainApp.class.getResource(Constants.VIEW_EDITOR));
+		AnchorPane personOverview = (AnchorPane) loader.load();
+		rootLayout.setCenter(personOverview);
+		EditorController controller = loader.getController();
+		controller.setMainApp(this);
 	}
 
-	public boolean showItemDialog(Item item, String activityTitle, String button,
-			ObservableList<Item> selectedItemsList) {
-		try {
-			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(MainApp.class.getResource("view/ItemDialog.fxml"));
-			AnchorPane page = (AnchorPane) loader.load();
+	public boolean showItemDialog(String activityTitle, String button, ObservableList<Item> selectedItemsList)
+			throws IOException {
+		FXMLLoader loader = new FXMLLoader();
+		loader.setLocation(MainApp.class.getResource(Constants.VIEW_ITEM_DIALOG));
+		AnchorPane page = (AnchorPane) loader.load();
 
-			Stage dialogStage = new Stage();
-			dialogStage.setTitle(activityTitle + " " + "Key");
-			dialogStage.initModality(Modality.WINDOW_MODAL);
-			dialogStage.initOwner(primaryStage);
-			Scene scene = new Scene(page);
-			dialogStage.setScene(scene);
+		Stage dialogStage = new Stage();
+		dialogStage.setTitle(activityTitle + " " + Constants.ITEM_DIALOG_TITLE_KEY);
+		dialogStage.initModality(Modality.WINDOW_MODAL);
+		dialogStage.initOwner(primaryStage);
+		Scene scene = new Scene(page);
+		dialogStage.setScene(scene);
 
-			ItemDialogController controller = loader.getController();
-			controller.setDialogStage(dialogStage);
-			controller.setItem(item, button, selectedItemsList);
+		ItemDialogController controller = loader.getController();
+		controller.setDialogStage(dialogStage);
+		controller.setItem(button, selectedItemsList);
 
-			dialogStage.showAndWait();
+		dialogStage.showAndWait();
 
-			return controller.isOkClicked();
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		}
+		return controller.isOkClicked();
 	}
 
-	public boolean showOpenDialog() {
-		try {
-			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(MainApp.class.getResource("view/OpenDialog.fxml"));
-			AnchorPane page = (AnchorPane) loader.load();
+	public boolean showOpenDialog() throws IOException {
+		FXMLLoader loader = new FXMLLoader();
+		loader.setLocation(MainApp.class.getResource(Constants.VIEW_OPEN_DIALOG));
+		AnchorPane page = (AnchorPane) loader.load();
 
-			Stage dialogStage = new Stage();
-			dialogStage.initModality(Modality.WINDOW_MODAL);
-			dialogStage.initOwner(primaryStage);
-			Scene scene = new Scene(page);
-			dialogStage.setScene(scene);
+		Stage dialogStage = new Stage();
+		dialogStage.initModality(Modality.WINDOW_MODAL);
+		dialogStage.initOwner(primaryStage);
+		Scene scene = new Scene(page);
+		dialogStage.setScene(scene);
 
-			OpenDialogController controller = loader.getController();
-			controller.setDialogStage(dialogStage);
+		OpenDialogController controller = loader.getController();
+		controller.setDialogStage(dialogStage);
 
-			dialogStage.showAndWait();
+		dialogStage.showAndWait();
 
-			return controller.isOkSelection();
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		}
+		return controller.isOkSelection();
 	}
 
 	public Stage getPrimaryStage() {

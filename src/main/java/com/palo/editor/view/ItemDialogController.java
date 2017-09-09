@@ -1,7 +1,5 @@
 package com.palo.editor.view;
 
-import java.util.List;
-
 import com.palo.editor.model.Item;
 import com.palo.editor.model.Translation;
 import com.palo.util.PreferencesSingleton;
@@ -22,45 +20,44 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 
 public class ItemDialogController {
-	
+
 	@FXML
 	private TextField keyField;
-	
+
 	@FXML
 	private TableColumn<Item, String> keyCol;
-	
+
 	@FXML
 	private TableView<Item> keysTable;
-	
+
 	@FXML
 	private TableView<Translation> translationsTable;
-	
+
 	@FXML
 	private TableColumn<Translation, String> langCol;
-	
+
 	@FXML
 	private TableColumn<Translation, String> valueCol;
-	
+
 	@FXML
 	private Button confirmButton;
-	
+
 	@FXML
 	private Button cancelButton;
-	
+
 	private Stage dialogStage;
-	
-	private Item item;
-	
+
+	private ObservableList<Item> itemsList;
+
 	private boolean okClicked = false;
-	
+
 	@FXML
-    private void initialize() {
-		keyCol.setCellValueFactory(
-				new Callback<TableColumn.CellDataFeatures<Item, String>, ObservableValue<String>>() {
-					public ObservableValue<String> call(TableColumn.CellDataFeatures<Item, String> e) {
-						return new SimpleStringProperty(e.getValue().getKey());
-					}
-				});
+	private void initialize() {
+		keyCol.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Item, String>, ObservableValue<String>>() {
+			public ObservableValue<String> call(TableColumn.CellDataFeatures<Item, String> e) {
+				return new SimpleStringProperty(e.getValue().getKey());
+			}
+		});
 		keyCol.setCellFactory(TextFieldTableCell.forTableColumn());
 		keyCol.setOnEditCommit(new EventHandler<CellEditEvent<Item, String>>() {
 			@Override
@@ -90,68 +87,52 @@ public class ItemDialogController {
 		for (String langName : PreferencesSingleton.getInstace().getTranslationsList()) {
 			translationsTable.getItems().add(new Translation(langName, ""));
 		}
-    }
-	
+	}
+
 	public void setDialogStage(Stage dialogStage) {
 		this.dialogStage = dialogStage;
 	}
-	
-	public void setItem(Item item, String buttonText, ObservableList<Item> selectedItemsList) {
-		
-		this.item = item;
-		
-		if ("MULTIPLE".equals(item.getKey())) {
-			// keyField.setDisable(true);
+
+	public void setItem(String buttonText, ObservableList<Item> selectedItemsList) {
+
+		this.itemsList = selectedItemsList;
+
+		if (itemsList.size() > 1) {
 			keyCol.setText("Keys");
 		}
-		// keyField.setText(item.getKey());
 		confirmButton.setText(buttonText);
-		
+
 		ObservableList<Translation> translations = FXCollections.observableArrayList();
-		for (String s : PreferencesSingleton.getInstace().getTranslationsList()) {
-			translations.add(new Translation(s, item.getValuesMap().get(s)));
+		for (String language : PreferencesSingleton.getInstace().getTranslationsList()) {
+			String value = itemsList.get(0).getValuesMap().get(language);
+			if (itemsList.size() > 1) {
+				value = "";
+			}
+			translations.add(new Translation(language, value));
 		}
-		
+
+		keysTable.setItems(itemsList);
 		translationsTable.setItems(translations);
 	}
-	
+
 	public boolean isOkClicked() {
 		return okClicked;
 	}
-	
+
 	@FXML
 	private void handleConfirmation() {
-		if (isInputValid()) {
-			
-			item.setKey(keyField.getText());
-			
-			for (String s : PreferencesSingleton.getInstace().getTranslationsList()) {
-				String value = null;
-				for (Translation t : translationsTable.getItems()) {
-					if (t.getLanguage().equals(s)) {
-						value = t.getValue();
-					}
-				}
-				item.getValuesMap().put(s, value);
-			}
-			
-			okClicked = true;
-			dialogStage.close();
-		} else {
-			System.out.println("Not valid");
+		for (Translation t : translationsTable.getItems()) {
+			itemsList.stream().forEach(item -> {
+				item.getValuesMap().put(t.getLanguage(), t.getValue());
+			});
 		}
+		okClicked = true;
+		dialogStage.close();
 	}
-	
+
 	@FXML
-    private void handleCancel() {
-        dialogStage.close();
-    }
-	
-	private boolean isInputValid() {
-		if (keyField.isDisabled() || !keyField.getText().isEmpty()) {
-			return true;
-		}
-		return false;
+	private void handleCancel() {
+		dialogStage.close();
 	}
-	
+
 }

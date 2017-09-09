@@ -8,7 +8,7 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="375.0" prefWidth="360.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.palo.editor.view.ItemDialogController">
    <children>
-      <TableView editable="true" layoutX="59.0" layoutY="14.0" prefHeight="123.0" prefWidth="324.0" AnchorPane.leftAnchor="18.0" AnchorPane.rightAnchor="18.0" AnchorPane.topAnchor="18.0">
+      <TableView fx:id="keysTable" editable="true" layoutX="59.0" layoutY="14.0" prefHeight="123.0" prefWidth="324.0" AnchorPane.leftAnchor="18.0" AnchorPane.rightAnchor="18.0" AnchorPane.topAnchor="18.0">
         <columns>
           <TableColumn fx:id="keyCol" prefWidth="75.0" text="Key" />
         </columns>

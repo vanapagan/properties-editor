@@ -17,6 +17,7 @@ import java.util.Vector;
 import com.palo.editor.MainApp;
 import com.palo.editor.model.FileHolder;
 import com.palo.editor.model.Item;
+import com.palo.util.Constants;
 import com.palo.util.PreferencesSingleton;
 
 import javafx.beans.property.SimpleStringProperty;
@@ -127,78 +128,58 @@ public class EditorController {
 
 	public void setMainApp(MainApp mainApp) {
 		this.mainApp = mainApp;
-
 		FilteredList<Item> filteredData = new FilteredList<>(this.mainApp.getItems(), item -> true);
-
 		filterField.textProperty().addListener((observable, oldValue, newValue) -> {
-
 			filteredData.setPredicate(item -> {
-
 				if (newValue == null || newValue.isEmpty()) {
 					return true;
 				}
-
 				String lowerCaseFilter = newValue.toLowerCase();
-
 				if (item.getKey().toLowerCase().contains(lowerCaseFilter)) {
 					return true;
 				}
 				return false;
-
 			});
-
 		});
-
 		sortedData = new SortedList<>(filteredData);
 		sortedData.comparatorProperty().bind(itemTable.comparatorProperty());
 		itemTable.setItems(sortedData);
-
 	}
 
 	@FXML
-	private void handleAddNewItem() {
+	private void handleAddNew() throws IOException {
 		Item item = new Item("");
 		for (String s : PreferencesSingleton.getInstace().getTranslationsList()) {
 			item.getValuesMap().put(s, "");
 		}
-		boolean okClicked = mainApp.showItemDialog(item, "New", "Add", FXCollections.observableArrayList());
+		ObservableList<Item> newItemsList = FXCollections.observableArrayList();
+		newItemsList.add(item);
+		boolean okClicked = mainApp.showItemDialog(Constants.EDITOR_ADD_NEW_TITLE, Constants.EDITOR_ADD_NEW_BUTTON, newItemsList);
 		if (okClicked) {
 			mainApp.getItems().add(item);
 		}
 	}
 
 	@FXML
-	private void handleEditItem() {
+	private void handleEdit() throws IOException {
 		ObservableList<Item> selectedItemsList = itemTable.getSelectionModel().getSelectedItems();
 		if (selectedItemsList != null && !selectedItemsList.isEmpty()) {
-			Item item = selectedItemsList.get(0);
-			String title = "Edit";
-			String button = "Edit";
+			String title = Constants.EDITOR_EDIT_TITLE;
+			String button = Constants.EDITOR_EDIT_BUTTON;
 			List<String> keyList = new ArrayList<>();
 			selectedItemsList.stream().forEach(selItem -> {
 				keyList.add(selItem.getKey());
 			});
 			if (selectedItemsList.size() > 1) {
-				item = new Item("MULTIPLE");
-				title = "Edit Multiple";
-				for (String s : PreferencesSingleton.getInstace().getTranslationsList()) {
-					item.getValuesMap().put(s, "");
-				}
+				title = Constants.EDITOR_EDIT_TITLE_MULTIPLE;
 			}
-			boolean okClicked = mainApp.showItemDialog(item, title, button, selectedItemsList);
-			if (okClicked) {
-				for (Item selectedItem : selectedItemsList) {
-					for (String s : PreferencesSingleton.getInstace().getTranslationsList()) {
-						selectedItem.getValuesMap().put(s, item.getValuesMap().get(s.replace(".properties", "")));
-					}
-				}
-			}
+			mainApp.showItemDialog(title, button, selectedItemsList);
 		}
 		itemTable.refresh();
 	}
 	
 	@FXML
-	private void handleDeleteItem() {
+	private void handleDelete() {
 		ObservableList<Item> selectedItemsList = itemTable.getSelectionModel().getSelectedItems();
 		for (Item selectedItem : selectedItemsList) {
 			mainApp.getItems().remove(selectedItem);
