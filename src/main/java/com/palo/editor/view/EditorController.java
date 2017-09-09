@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -14,6 +13,7 @@ import java.util.TreeMap;
 import java.util.Vector;
 
 import com.palo.editor.MainApp;
+import com.palo.editor.model.FileHolder;
 import com.palo.editor.model.Item;
 import com.palo.util.PreferencesSingleton;
 
@@ -166,11 +166,6 @@ public class EditorController {
 
 	@FXML
 	private void handleEditItem() {
-		/*
-		Item selectedItem = itemTable.getSelectionModel().getSelectedItem();
-		if (selectedItem != null) {
-			mainApp.showItemDialog(selectedItem, "Edit");
-		}*/
 		ObservableList<Item> selectedItemsList = itemTable.getSelectionModel().getSelectedItems();
 		if (selectedItemsList != null && !selectedItemsList.isEmpty()) {
 			Item item = selectedItemsList.get(0);
@@ -179,13 +174,9 @@ public class EditorController {
 			if (selectedItemsList.size() > 1) {
 				item = new Item("MULTIPLE");
 				title = "Edit Multiple";
-				
 				for (String s : PreferencesSingleton.getInstace().getTranslationsList()) {
 					item.getValuesMap().put(s, "");
 				}
-			}
-			for (String s : PreferencesSingleton.getInstace().getTranslationsList()) {
-				item.getValuesMap().put(s, "");
 			}
 			boolean okClicked = mainApp.showItemDialog(item, title, button);
 			if (okClicked) {
@@ -222,10 +213,16 @@ public class EditorController {
 			}
 			SortedProperties properties = new SortedProperties();
 			properties.putAll(map);
-			File file = new File(PreferencesSingleton.getInstace().getLocation() + s + ".properties");
-
+			
+			String path = "";
+			for (FileHolder fh : PreferencesSingleton.getInstace().getFileHolders()) {
+				if (s.equals(fh.getName())) {
+					path = fh.getPath();
+				}
+			}
+			File file = new File(path);
+			
 			OutputStreamWriter output = null;
-
 			try {
 				output = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
 				properties.store(output, null);

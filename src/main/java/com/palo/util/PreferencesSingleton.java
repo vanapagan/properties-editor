@@ -3,11 +3,13 @@ package com.palo.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.palo.editor.model.FileHolder;
+
 public class PreferencesSingleton {
 
 	private static PreferencesSingleton INSTANCE = new PreferencesSingleton();
 
-	private String location;
+	private List<FileHolder> fileHolders = new ArrayList<>();
 	private List<String> translationsList = new ArrayList<>();
 	
 	private PreferencesSingleton() {
@@ -21,12 +23,8 @@ public class PreferencesSingleton {
 		return translationsList;
 	}
 
-	public String getLocation() {
-		return location;
-	}
-
-	public void setLocation(String location) {
-		this.location = location;
+	public List<FileHolder> getFileHolders() {
+		return fileHolders;
 	}
 
 }

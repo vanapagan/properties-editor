@@ -1,6 +1,5 @@
 package com.palo.editor.view;
 
-import com.palo.editor.MainApp;
 import com.palo.editor.model.Item;
 import com.palo.editor.model.Translation;
 import com.palo.util.PreferencesSingleton;

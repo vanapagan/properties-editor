@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="420.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.palo.editor.view.OpenDialogController">
+   <children>
+      <ButtonBar layoutX="1.0" layoutY="61.0" prefHeight="24.0" prefWidth="400.0">
+         <buttons>
+            <Button fx:id="filesButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleFiles" prefHeight="24.0" prefWidth="187.0" text="Choose files..." />
+            <Button fx:id="directoryButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleDirectory" prefHeight="24.0" prefWidth="187.0" text="Choose a directory..." />
+         </buttons>
+      </ButtonBar>
+      <Label fx:id="pathLabel" alignment="CENTER" contentDisplay="CENTER" layoutY="25.0" prefHeight="17.0" prefWidth="420.0" text="Choose an action:" />
+   </children>
+</AnchorPane>

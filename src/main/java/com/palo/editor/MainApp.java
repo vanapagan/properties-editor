@@ -1,5 +1,6 @@
 package com.palo.editor;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,6 +18,7 @@ import java.util.Properties;
 import com.palo.editor.model.Item;
 import com.palo.editor.view.EditorController;
 import com.palo.editor.view.ItemDialogController;
+import com.palo.editor.view.OpenDialogController;
 import com.palo.util.PreferencesSingleton;
 
 import javafx.application.Application;
@@ -26,15 +28,17 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class MainApp extends Application {
 
 	private static final String location = "C:/Temp/translations";
-	//public static String[] arr = { "translations_en.properties", "translations_fi.properties",
-	//		"translations_et.properties" };
-	//public static List<String> translationsList = new ArrayList<>();
+	// public static String[] arr = { "translations_en.properties",
+	// "translations_fi.properties",
+	// "translations_et.properties" };
+	// public static List<String> translationsList = new ArrayList<>();
 
 	private Stage primaryStage;
 	private BorderPane rootLayout;
@@ -46,45 +50,46 @@ public class MainApp extends Application {
 		this.primaryStage = primaryStage;
 		this.primaryStage.setTitle("Properties Editor");
 
+		File prefFile = new File("C:\\temp\\preferences.properties");
+		if (!prefFile.exists()) {
+			showOpenDialog();
+		}
+
 		Map<String, Item> map = new HashMap<String, Item>();
 
 		// TODO load properies files
-		PreferencesSingleton.getInstace().setLocation(location);
-		Path path = Paths.get(PreferencesSingleton.getInstace().getLocation());
-		try {
-			Files.list(path).filter(f -> f.toString().endsWith(".properties")).forEach(filepath -> {
-				Properties prop = new Properties();
-				InputStream input = null;
+
+		PreferencesSingleton.getInstace().getFileHolders().stream().forEach(fileholder -> {
+			Properties prop = new Properties();
+			InputStream input = null;
+			try {
+				Path path = Paths.get(fileholder.getPath());
+				input = Files.newInputStream(path);
+				prop.load(new InputStreamReader(input, StandardCharsets.UTF_8));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			String translation = fileholder.getName();
+			PreferencesSingleton.getInstace().getTranslationsList().add(translation);
+			for (Object k : prop.keySet()) {
+				String key = (String) k;
+				String value = prop.getProperty(key);
+				Item item = map.get(key);
+				if (item == null) {
+					item = new Item(key);
+					map.put(key, item);
+				}
+				item.addNewValue(translation, value);
+			}
+			if (input != null) {
 				try {
-					input = Files.newInputStream(filepath);
-					prop.load(new InputStreamReader(input, StandardCharsets.UTF_8));
+					input.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				String translation = filepath.getFileName().toString().replace(".properties", "");
-				PreferencesSingleton.getInstace().getTranslationsList().add(translation);
-				for (Object k : prop.keySet()) {
-					String key = (String) k;
-					String value = prop.getProperty(key);
-					Item item = map.get(key);
-					if (item == null) {
-						item = new Item(key);
-						map.put(key, item);
-					}
-					item.addNewValue(translation, value);
-				}
-				if (input != null) {
-					try {
-						input.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			});
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
+			}
+		});
+
 		items = FXCollections.observableArrayList(map.values());
 
 		initRootLayout();
@@ -142,6 +147,30 @@ public class MainApp extends Application {
 			dialogStage.showAndWait();
 
 			return controller.isOkClicked();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	public boolean showOpenDialog() {
+		try {
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(MainApp.class.getResource("view/OpenDialog.fxml"));
+			AnchorPane page = (AnchorPane) loader.load();
+
+			Stage dialogStage = new Stage();
+			dialogStage.initModality(Modality.WINDOW_MODAL);
+			dialogStage.initOwner(primaryStage);
+			Scene scene = new Scene(page);
+			dialogStage.setScene(scene);
+
+			OpenDialogController controller = loader.getController();
+			controller.setDialogStage(dialogStage);
+
+			dialogStage.showAndWait();
+
+			return controller.isOkSelection();
 		} catch (IOException e) {
 			e.printStackTrace();
 			return false;
