@@ -5,10 +5,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
@@ -46,7 +44,10 @@ public class EditorController {
 	private Button saveButton;
 	
 	@FXML
-	private Button newButton;
+	private Button newSingleButton;
+	
+	@FXML
+	private Button newMultipleButton;
 	
 	@FXML
 	private Button editButton;
@@ -149,12 +150,24 @@ public class EditorController {
 	@FXML
 	private void handleAddNew() throws IOException {
 		Item item = new Item("");
+		PreferencesSingleton.getInstace().getTranslationsList().stream().forEach(lang -> {
+			item.getValuesMap().put(lang, "");
+		});
+		boolean okClicked = mainApp.showSingleItemDialog(item, Constants.EDITOR_ADD_NEW_TITLE);
+		if (okClicked) {
+			mainApp.getItems().add(item);
+		}
+	}
+	
+	@FXML
+	private void handleAddMultipleNew() throws IOException {
+		Item item = new Item("");
 		for (String s : PreferencesSingleton.getInstace().getTranslationsList()) {
 			item.getValuesMap().put(s, "");
 		}
 		ObservableList<Item> newItemsList = FXCollections.observableArrayList();
 		newItemsList.add(item);
-		boolean okClicked = mainApp.showItemDialog(Constants.EDITOR_ADD_NEW_TITLE, Constants.EDITOR_ADD_NEW_BUTTON, newItemsList);
+		boolean okClicked = mainApp.showMultipleItemDialog(newItemsList, Constants.EDITOR_ADD_NEW_TITLE);
 		if (okClicked) {
 			mainApp.getItems().add(item);
 		}
@@ -164,16 +177,11 @@ public class EditorController {
 	private void handleEdit() throws IOException {
 		ObservableList<Item> selectedItemsList = itemTable.getSelectionModel().getSelectedItems();
 		if (selectedItemsList != null && !selectedItemsList.isEmpty()) {
-			String title = Constants.EDITOR_EDIT_TITLE;
-			String button = Constants.EDITOR_EDIT_BUTTON;
-			List<String> keyList = new ArrayList<>();
-			selectedItemsList.stream().forEach(selItem -> {
-				keyList.add(selItem.getKey());
-			});
 			if (selectedItemsList.size() > 1) {
-				title = Constants.EDITOR_EDIT_TITLE_MULTIPLE;
+				mainApp.showMultipleItemDialog(selectedItemsList, Constants.EDITOR_EDIT_TITLE_MULTIPLE);
+			} else {
+				mainApp.showSingleItemDialog(selectedItemsList.get(0), Constants.EDITOR_EDIT_TITLE);
 			}
-			mainApp.showItemDialog(title, button, selectedItemsList);
 		}
 		itemTable.refresh();
 	}

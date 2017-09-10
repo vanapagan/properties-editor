@@ -13,23 +13,19 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
-public class ItemDialogController {
-
-	@FXML
-	private TextField keyField;
-
-	@FXML
-	private TableColumn<Item, String> keyCol;
+public class MultipleItemDialogController {
 
 	@FXML
 	private TableView<Item> keysTable;
-
+	
+	@FXML
+	private TableColumn<Item, String> keyCol;
+	
 	@FXML
 	private TableView<Translation> translationsTable;
 
@@ -44,13 +40,19 @@ public class ItemDialogController {
 
 	@FXML
 	private Button cancelButton;
+	
+	@FXML
+	private Button addKeyButton;
+	
+	@FXML
+	private Button removeKeyButton;
 
 	private Stage dialogStage;
 
 	private ObservableList<Item> itemsList;
 
 	private boolean okClicked = false;
-
+	
 	@FXML
 	private void initialize() {
 		keyCol.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Item, String>, ObservableValue<String>>() {
@@ -88,29 +90,17 @@ public class ItemDialogController {
 			translationsTable.getItems().add(new Translation(langName, ""));
 		}
 	}
-
-	public void setDialogStage(Stage dialogStage) {
-		this.dialogStage = dialogStage;
-	}
-
-	public void setItem(String buttonText, ObservableList<Item> selectedItemsList) {
+	
+	public void setItemsList(String buttonText, ObservableList<Item> selectedItemsList) {
 
 		this.itemsList = selectedItemsList;
 
-		if (itemsList.size() > 1) {
-			keyCol.setText("Keys");
-		}
-		confirmButton.setText(buttonText);
-
 		ObservableList<Translation> translations = FXCollections.observableArrayList();
 		for (String language : PreferencesSingleton.getInstace().getTranslationsList()) {
-			String value = itemsList.get(0).getValuesMap().get(language);
-			if (itemsList.size() > 1) {
-				value = "";
-			}
+			String value = "";
 			translations.add(new Translation(language, value));
 		}
-
+		
 		keysTable.setItems(itemsList);
 		translationsTable.setItems(translations);
 	}
@@ -134,5 +124,9 @@ public class ItemDialogController {
 	private void handleCancel() {
 		dialogStage.close();
 	}
-
+	
+	public void setDialogStage(Stage dialogStage) {
+  		this.dialogStage = dialogStage;
+  	}
+	
 }

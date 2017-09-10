@@ -6,7 +6,7 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="375.0" prefWidth="360.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.palo.editor.view.ItemDialogController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="375.0" prefWidth="360.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.palo.editor.view.MultipleItemDialogController">
    <children>
       <TableView fx:id="keysTable" editable="true" layoutX="59.0" layoutY="14.0" prefHeight="123.0" prefWidth="324.0" AnchorPane.leftAnchor="18.0" AnchorPane.rightAnchor="18.0" AnchorPane.topAnchor="18.0">
         <columns>
@@ -18,7 +18,7 @@
       </TableView>
       <TableView fx:id="translationsTable" editable="true" layoutX="18.0" layoutY="159.0" prefHeight="150.0" prefWidth="264.0" AnchorPane.leftAnchor="18.0" AnchorPane.rightAnchor="18.0">
         <columns>
-          <TableColumn fx:id="langCol" prefWidth="103.0" text="Language" />
+          <TableColumn fx:id="langCol" editable="false" prefWidth="103.0" text="Language" />
           <TableColumn fx:id="valueCol" prefWidth="159.0" text="Value" />
         </columns>
          <columnResizePolicy>
@@ -27,7 +27,7 @@
       </TableView>
       <ButtonBar layoutX="82.0" layoutY="323.0" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="24.0" prefWidth="200.0" AnchorPane.bottomAnchor="18.0" AnchorPane.rightAnchor="18.0">
         <buttons>
-          <Button fx:id="confirmButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleConfirmation" prefHeight="24.0" prefWidth="75.0" text="Add" />
+          <Button fx:id="confirmButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleConfirmation" prefHeight="24.0" prefWidth="75.0" text="OK" />
             <Button fx:id="cancelButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleCancel" prefHeight="24.0" prefWidth="75.0" text="Cancel" />
         </buttons>
       </ButtonBar>

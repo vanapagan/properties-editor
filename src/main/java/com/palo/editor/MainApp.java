@@ -20,7 +20,8 @@ import org.json.JSONTokener;
 import com.palo.editor.model.FileHolder;
 import com.palo.editor.model.Item;
 import com.palo.editor.view.EditorController;
-import com.palo.editor.view.ItemDialogController;
+import com.palo.editor.view.MultipleItemDialogController;
+import com.palo.editor.view.SingleItemDialogController;
 import com.palo.editor.view.OpenDialogController;
 import com.palo.util.Constants;
 import com.palo.util.PreferencesSingleton;
@@ -125,22 +126,44 @@ public class MainApp extends Application {
 		controller.setMainApp(this);
 	}
 
-	public boolean showItemDialog(String activityTitle, String button, ObservableList<Item> selectedItemsList)
+	public boolean showSingleItemDialog(Item item, String title)
 			throws IOException {
 		FXMLLoader loader = new FXMLLoader();
-		loader.setLocation(MainApp.class.getResource(Constants.VIEW_ITEM_DIALOG));
+		loader.setLocation(MainApp.class.getResource(Constants.VIEW_SINGLE_ITEM_DIALOG));
 		AnchorPane page = (AnchorPane) loader.load();
 
 		Stage dialogStage = new Stage();
-		dialogStage.setTitle(activityTitle + " " + Constants.ITEM_DIALOG_TITLE_KEY);
+		dialogStage.setTitle(title + " " + Constants.ITEM_DIALOG_TITLE_KEY);
 		dialogStage.initModality(Modality.WINDOW_MODAL);
 		dialogStage.initOwner(primaryStage);
 		Scene scene = new Scene(page);
 		dialogStage.setScene(scene);
 
-		ItemDialogController controller = loader.getController();
+		SingleItemDialogController controller = loader.getController();
 		controller.setDialogStage(dialogStage);
-		controller.setItem(button, selectedItemsList);
+		controller.setItem(item);
+
+		dialogStage.showAndWait();
+
+		return controller.isOkClicked();
+	}
+	
+	public boolean showMultipleItemDialog(ObservableList<Item> selectedItemsList, String title)
+			throws IOException {
+		FXMLLoader loader = new FXMLLoader();
+		loader.setLocation(MainApp.class.getResource(Constants.VIEW_MULTIPLE_ITEM_DIALOG));
+		AnchorPane page = (AnchorPane) loader.load();
+
+		Stage dialogStage = new Stage();
+		dialogStage.setTitle(title + " " + Constants.ITEM_DIALOG_TITLE_KEYS);
+		dialogStage.initModality(Modality.WINDOW_MODAL);
+		dialogStage.initOwner(primaryStage);
+		Scene scene = new Scene(page);
+		dialogStage.setScene(scene);
+
+		MultipleItemDialogController controller = loader.getController();
+		controller.setDialogStage(dialogStage);
+		controller.setItemsList(Constants.EDITOR_ADD_NEW_BUTTON, selectedItemsList);
 
 		dialogStage.showAndWait();
 
