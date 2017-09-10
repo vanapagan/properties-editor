@@ -11,6 +11,7 @@ import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableColumn.CellEditEvent;
@@ -22,10 +23,10 @@ public class MultipleItemDialogController {
 
 	@FXML
 	private TableView<Item> keysTable;
-	
+
 	@FXML
 	private TableColumn<Item, String> keyCol;
-	
+
 	@FXML
 	private TableView<Translation> translationsTable;
 
@@ -40,10 +41,10 @@ public class MultipleItemDialogController {
 
 	@FXML
 	private Button cancelButton;
-	
+
 	@FXML
 	private Button addKeyButton;
-	
+
 	@FXML
 	private Button removeKeyButton;
 
@@ -53,6 +54,8 @@ public class MultipleItemDialogController {
 
 	private boolean okClicked = false;
 	
+	private boolean isNew = false;
+
 	@FXML
 	private void initialize() {
 		keyCol.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Item, String>, ObservableValue<String>>() {
@@ -89,20 +92,51 @@ public class MultipleItemDialogController {
 		for (String langName : PreferencesSingleton.getInstace().getTranslationsList()) {
 			translationsTable.getItems().add(new Translation(langName, ""));
 		}
+		keysTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+			if (isNew && newSelection != null) {
+				removeKeyButton.setDisable(false);
+			} else {
+				removeKeyButton.setDisable(true);
+			}
+		});
+		keysTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		removeKeyButton.setDisable(true);
 	}
-	
-	public void setItemsList(String buttonText, ObservableList<Item> selectedItemsList) {
+
+	public void setItemsList(ObservableList<Item> selectedItemsList, boolean isNew) {
 
 		this.itemsList = selectedItemsList;
+		this.isNew = isNew;
+		
+		if (!isNew) {
+			addKeyButton.setDisable(true);
+		}
 
 		ObservableList<Translation> translations = FXCollections.observableArrayList();
 		for (String language : PreferencesSingleton.getInstace().getTranslationsList()) {
 			String value = "";
 			translations.add(new Translation(language, value));
 		}
-		
+
 		keysTable.setItems(itemsList);
 		translationsTable.setItems(translations);
+	}
+
+	@FXML
+	public void handleAddKey() {
+		Item item = new Item("");
+		for (String s : PreferencesSingleton.getInstace().getTranslationsList()) {
+			item.getValuesMap().put(s, "");
+		}
+		keysTable.getItems().add(item);
+	}
+
+	@FXML
+	public void handleRemoveKey() {
+		ObservableList<Item> selectedItemsList = keysTable.getSelectionModel().getSelectedItems();
+		for (Item selectedItem : selectedItemsList) {
+			itemsList.remove(selectedItem);
+		}
 	}
 
 	public boolean isOkClicked() {
@@ -124,9 +158,9 @@ public class MultipleItemDialogController {
 	private void handleCancel() {
 		dialogStage.close();
 	}
-	
+
 	public void setDialogStage(Stage dialogStage) {
-  		this.dialogStage = dialogStage;
-  	}
-	
+		this.dialogStage = dialogStage;
+	}
+
 }

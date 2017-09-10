@@ -167,9 +167,11 @@ public class EditorController {
 		}
 		ObservableList<Item> newItemsList = FXCollections.observableArrayList();
 		newItemsList.add(item);
-		boolean okClicked = mainApp.showMultipleItemDialog(newItemsList, Constants.EDITOR_ADD_NEW_TITLE);
+		boolean okClicked = mainApp.showMultipleItemDialog(newItemsList, Constants.EDITOR_ADD_NEW_TITLE, true);
 		if (okClicked) {
-			mainApp.getItems().add(item);
+			newItemsList.stream().forEach(newItem -> {
+				mainApp.getItems().add(newItem);
+			});
 		}
 	}
 
@@ -178,7 +180,7 @@ public class EditorController {
 		ObservableList<Item> selectedItemsList = itemTable.getSelectionModel().getSelectedItems();
 		if (selectedItemsList != null && !selectedItemsList.isEmpty()) {
 			if (selectedItemsList.size() > 1) {
-				mainApp.showMultipleItemDialog(selectedItemsList, Constants.EDITOR_EDIT_TITLE_MULTIPLE);
+				mainApp.showMultipleItemDialog(selectedItemsList, Constants.EDITOR_EDIT_TITLE_MULTIPLE, false);
 			} else {
 				mainApp.showSingleItemDialog(selectedItemsList.get(0), Constants.EDITOR_EDIT_TITLE);
 			}
@@ -196,7 +198,7 @@ public class EditorController {
 
 	@FXML
 	private void handleSaveButton() {
-		ObservableList<Item> items = itemTable.getItems();
+		ObservableList<Item> items = mainApp.getItems();
 		for (String s : PreferencesSingleton.getInstace().getTranslationsList()) {
 			Map<String, String> map = new TreeMap<>();
 			for (Item item : items) {

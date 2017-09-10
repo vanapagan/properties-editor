@@ -148,7 +148,7 @@ public class MainApp extends Application {
 		return controller.isOkClicked();
 	}
 	
-	public boolean showMultipleItemDialog(ObservableList<Item> selectedItemsList, String title)
+	public boolean showMultipleItemDialog(ObservableList<Item> selectedItemsList, String title, boolean isNew)
 			throws IOException {
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(MainApp.class.getResource(Constants.VIEW_MULTIPLE_ITEM_DIALOG));
@@ -163,7 +163,7 @@ public class MainApp extends Application {
 
 		MultipleItemDialogController controller = loader.getController();
 		controller.setDialogStage(dialogStage);
-		controller.setItemsList(Constants.EDITOR_ADD_NEW_BUTTON, selectedItemsList);
+		controller.setItemsList(selectedItemsList, isNew);
 
 		dialogStage.showAndWait();
 
