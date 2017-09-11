@@ -48,7 +48,7 @@ public class OpenDialogController {
 	@FXML
 	private void handleFiles() throws IOException {
 		FileChooser fileChooser = new FileChooser();
-		ExtensionFilter extFilter = new FileChooser.ExtensionFilter("*.properties");
+		ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Properties files", "properties");
 		fileChooser.setSelectedExtensionFilter(extFilter);
 		List<File> selectedFilesList = fileChooser.showOpenMultipleDialog(dialogStage);
 		for (File f : selectedFilesList) {
