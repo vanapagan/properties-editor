@@ -19,21 +19,17 @@ import com.palo.util.Constants;
 import com.palo.util.PreferencesSingleton;
 
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.util.Callback;
 
 public class EditorController {
 
@@ -42,16 +38,16 @@ public class EditorController {
 
 	@FXML
 	private Button saveButton;
-	
+
 	@FXML
 	private Button newSingleButton;
-	
+
 	@FXML
 	private Button newMultipleButton;
-	
+
 	@FXML
 	private Button editButton;
-	
+
 	@FXML
 	private Button deleteButton;
 
@@ -59,7 +55,7 @@ public class EditorController {
 	private TableView<Item> itemTable;
 
 	private MainApp mainApp;
-	
+
 	SortedList<Item> sortedData;
 
 	public EditorController() {
@@ -69,59 +65,39 @@ public class EditorController {
 	private void initialize() {
 
 		TableColumn<Item, String> keyColumn = new TableColumn<Item, String>("Key");
-		keyColumn.setCellValueFactory(
-				new Callback<TableColumn.CellDataFeatures<Item, String>, ObservableValue<String>>() {
-					public ObservableValue<String> call(TableColumn.CellDataFeatures<Item, String> e) {
-						return new SimpleStringProperty(e.getValue().getKey());
-					}
-				});
+		keyColumn.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().getKey()));
 		keyColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-		keyColumn.setOnEditCommit(new EventHandler<CellEditEvent<Item, String>>() {
-			@Override
-			public void handle(CellEditEvent<Item, String> t) {
-				t.getTableView().getItems().get(t.getTablePosition().getRow()).setKey(t.getNewValue());
-			}
-		});
+		keyColumn.setOnEditCommit(
+				e -> e.getTableView().getItems().get(e.getTablePosition().getRow()).setKey(e.getNewValue()));
 		itemTable.getColumns().add(keyColumn);
 
-		for (String filename : PreferencesSingleton.getInstace().getTranslationsList()) {
+		PreferencesSingleton.getInstace().getTranslationsList().stream().forEach(filename -> {
 			TableColumn<Item, String> languageColumn = new TableColumn<Item, String>(filename);
-			languageColumn.setCellValueFactory(
-					new Callback<TableColumn.CellDataFeatures<Item, String>, ObservableValue<String>>() {
-						public ObservableValue<String> call(TableColumn.CellDataFeatures<Item, String> p) {
-							return new SimpleStringProperty(
-									p.getValue().fetchValue(filename));
-						}
-					});
+			languageColumn.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().fetchValue(filename)));
 			languageColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-			languageColumn.setOnEditCommit(new EventHandler<CellEditEvent<Item, String>>() {
-				@Override
-				public void handle(CellEditEvent<Item, String> t) {
-					t.getTableView().getItems().get(t.getTablePosition().getRow()).getValuesMap()
-							.put(t.getTableColumn().getText(), t.getNewValue());
-				}
-
-			});
+			languageColumn.setOnEditCommit(e -> e.getTableView().getItems().get(e.getTablePosition().getRow())
+					.getValuesMap().put(e.getTableColumn().getText(), e.getNewValue()));
 			itemTable.getColumns().add(languageColumn);
-		}
-		
-		itemTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-		    if (newSelection != null) {
-		    	editButton.setDisable(false);
-				deleteButton.setDisable(false);
-		    } else {
-		    	editButton.setDisable(true);
-				deleteButton.setDisable(true);
-		    }
 		});
-		
+			
+
+		itemTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+			if (newSelection != null) {
+				editButton.setDisable(false);
+				deleteButton.setDisable(false);
+			} else {
+				editButton.setDisable(true);
+				deleteButton.setDisable(true);
+			}
+		});
+
 		itemTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
 		keyColumn.setSortType(TableColumn.SortType.ASCENDING);
 		itemTable.getSortOrder().add(keyColumn);
 
 		itemTable.setEditable(true);
-		
+
 		editButton.setDisable(true);
 		deleteButton.setDisable(true);
 
@@ -158,7 +134,7 @@ public class EditorController {
 			mainApp.getItems().add(item);
 		}
 	}
-	
+
 	@FXML
 	private void handleAddMultipleNew() throws IOException {
 		Item item = new Item("");
@@ -187,7 +163,7 @@ public class EditorController {
 		}
 		itemTable.refresh();
 	}
-	
+
 	@FXML
 	private void handleDelete() {
 		ObservableList<Item> selectedItemsList = itemTable.getSelectionModel().getSelectedItems();
@@ -211,7 +187,7 @@ public class EditorController {
 			}
 			SortedProperties properties = new SortedProperties();
 			properties.putAll(map);
-			
+
 			String path = "";
 			for (FileHolder fh : PreferencesSingleton.getInstace().getFileHolders()) {
 				if (s.equals(fh.getName())) {
@@ -219,7 +195,7 @@ public class EditorController {
 				}
 			}
 			File file = new File(path);
-			
+
 			OutputStreamWriter output = null;
 			try {
 				output = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
