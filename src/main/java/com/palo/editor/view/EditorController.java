@@ -138,9 +138,10 @@ public class EditorController {
 	@FXML
 	private void handleAddMultipleNew() throws IOException {
 		Item item = new Item("");
-		for (String s : PreferencesSingleton.getInstace().getTranslationsList()) {
-			item.getValuesMap().put(s, "");
-		}
+		PreferencesSingleton.getInstace().getTranslationsList().stream().forEach(lang -> {
+			item.getValuesMap().put(lang, "");
+		});
+			
 		ObservableList<Item> newItemsList = FXCollections.observableArrayList();
 		newItemsList.add(item);
 		boolean okClicked = mainApp.showMultipleItemDialog(newItemsList, Constants.EDITOR_ADD_NEW_TITLE, true);
