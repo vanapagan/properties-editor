@@ -87,7 +87,7 @@ public class MainApp extends Application {
 			}
 			String translation = fileholder.getName();
 			PreferencesSingleton.getInstace().getTranslationsList().add(translation);
-			for (Object k : prop.keySet()) {
+			prop.keySet().stream().forEach(k -> {
 				String key = (String) k;
 				String value = prop.getProperty(key);
 				Item item = map.get(key);
@@ -96,7 +96,7 @@ public class MainApp extends Application {
 					map.put(key, item);
 				}
 				item.addNewValue(translation, value);
-			}
+			});
 			if (input != null) {
 				try {
 					input.close();
