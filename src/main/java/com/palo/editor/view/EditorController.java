@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
 import java.util.Vector;
+import java.util.stream.Collectors;
 
 import com.palo.editor.MainApp;
 import com.palo.editor.model.FileHolder;
@@ -67,19 +68,25 @@ public class EditorController {
 		TableColumn<Item, String> keyColumn = new TableColumn<Item, String>("Key");
 		keyColumn.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().getKey()));
 		keyColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-		keyColumn.setOnEditCommit(
-				e -> e.getTableView().getItems().get(e.getTablePosition().getRow()).setKey(e.getNewValue()));
+		keyColumn.setOnEditCommit(e -> e.getTableView().getItems().get(e.getTablePosition().getRow())
+				.setKey(e.getNewValue()));
 		itemTable.getColumns().add(keyColumn);
 
-		PreferencesSingleton.getInstace().getTranslationsList().stream().forEach(filename -> {
-			TableColumn<Item, String> languageColumn = new TableColumn<Item, String>(filename);
-			languageColumn.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().fetchValue(filename)));
-			languageColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-			languageColumn.setOnEditCommit(e -> e.getTableView().getItems().get(e.getTablePosition().getRow())
-					.getValuesMap().put(e.getTableColumn().getText(), e.getNewValue()));
-			itemTable.getColumns().add(languageColumn);
-		});
-			
+		PreferencesSingleton
+				.getInstace()
+				.getTranslationsList()
+				.stream()
+				.forEach(
+						filename -> {
+							TableColumn<Item, String> languageColumn = new TableColumn<Item, String>(filename);
+							languageColumn.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().fetchValue(
+									filename)));
+							languageColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+							languageColumn.setOnEditCommit(e -> e.getTableView().getItems()
+									.get(e.getTablePosition().getRow()).getValuesMap()
+									.put(e.getTableColumn().getText(), e.getNewValue()));
+							itemTable.getColumns().add(languageColumn);
+						});
 
 		itemTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
 			if (newSelection != null) {
@@ -141,7 +148,7 @@ public class EditorController {
 		PreferencesSingleton.getInstace().getTranslationsList().stream().forEach(lang -> {
 			item.getValuesMap().put(lang, "");
 		});
-			
+
 		ObservableList<Item> newItemsList = FXCollections.observableArrayList();
 		newItemsList.add(item);
 		boolean okClicked = mainApp.showMultipleItemDialog(newItemsList, Constants.EDITOR_ADD_NEW_TITLE, true);
@@ -167,35 +174,31 @@ public class EditorController {
 
 	@FXML
 	private void handleDelete() {
-		ObservableList<Item> selectedItemsList = itemTable.getSelectionModel().getSelectedItems();
-		for (Item selectedItem : selectedItemsList) {
-			mainApp.getItems().remove(selectedItem);
-		}
+		itemTable.getSelectionModel().getSelectedItems().stream()
+				.forEach(selectedItem -> mainApp.getItems().remove(selectedItem));
 	}
 
 	@FXML
 	private void handleSaveButton() {
-		ObservableList<Item> items = mainApp.getItems();
 		for (String s : PreferencesSingleton.getInstace().getTranslationsList()) {
+
 			Map<String, String> map = new TreeMap<>();
-			for (Item item : items) {
+			
+			mainApp.getItems().forEach(item -> {
 				String key = item.getKey();
 				String value = item.fetchValue(s);
 				if (value == null) {
 					value = "";
 				}
 				map.put(key, value);
-			}
+			});
+
 			SortedProperties properties = new SortedProperties();
 			properties.putAll(map);
 
-			String path = "";
-			for (FileHolder fh : PreferencesSingleton.getInstace().getFileHolders()) {
-				if (s.equals(fh.getName())) {
-					path = fh.getPath();
-				}
-			}
-			File file = new File(path);
+			FileHolder fileholder = PreferencesSingleton.getInstace().getFileHolders().stream()
+					.filter(fh -> s.equals(fh.getName())).collect(Collectors.toList()).get(0);
+			File file = new File(fileholder.getPath());
 
 			OutputStreamWriter output = null;
 			try {

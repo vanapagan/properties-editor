@@ -51,9 +51,7 @@ public class OpenDialogController {
 		ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Properties files", "properties");
 		fileChooser.setSelectedExtensionFilter(extFilter);
 		List<File> selectedFilesList = fileChooser.showOpenMultipleDialog(dialogStage);
-		for (File f : selectedFilesList) {
-			addNewFileHolder(f);
-		}
+		selectedFilesList.stream().forEach(f -> addNewFileHolder(f));
 		pathLabel.setText(selectedFilesList.size() + " " + Constants.OPEN_DIALOG_FILES_SELECTED);
 		okSelection = true;
 		

@@ -47,25 +47,10 @@ public class SingleItemDialogController {
 
 	@FXML
 	private void initialize() {
-		langCol.setCellValueFactory(
-				new Callback<TableColumn.CellDataFeatures<Translation, String>, ObservableValue<String>>() {
-					public ObservableValue<String> call(TableColumn.CellDataFeatures<Translation, String> e) {
-						return new SimpleStringProperty(e.getValue().getLanguage());
-					}
-				});
-		valueCol.setCellValueFactory(
-				new Callback<TableColumn.CellDataFeatures<Translation, String>, ObservableValue<String>>() {
-					public ObservableValue<String> call(TableColumn.CellDataFeatures<Translation, String> e) {
-						return new SimpleStringProperty(e.getValue().getValue());
-					}
-				});
+		langCol.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().getLanguage()));
+		valueCol.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().getValue()));
 		valueCol.setCellFactory(TextFieldTableCell.forTableColumn());
-		valueCol.setOnEditCommit(new EventHandler<CellEditEvent<Translation, String>>() {
-			@Override
-			public void handle(CellEditEvent<Translation, String> t) {
-				t.getTableView().getItems().get(t.getTablePosition().getRow()).setValue(t.getNewValue());
-			}
-		});
+		valueCol.setOnEditCommit(t -> t.getTableView().getItems().get(t.getTablePosition().getRow()).setValue(t.getNewValue()));
 		PreferencesSingleton.getInstace().getTranslationsList().stream().forEach(t -> {
 			translationsTable.getItems().add(new Translation(t, ""));
 		});
