@@ -54,9 +54,9 @@ public class OpenDialogController {
 		selectedFilesList.stream().forEach(f -> addNewFileHolder(f));
 		pathLabel.setText(selectedFilesList.size() + " " + Constants.OPEN_DIALOG_FILES_SELECTED);
 		okSelection = true;
-		
+
 		saveUserPreferences();
-		
+
 		dialogStage.close();
 	}
 
@@ -66,17 +66,18 @@ public class OpenDialogController {
 		File selectedDirectory = dirChooser.showDialog(dialogStage);
 		if (selectedDirectory == null) {
 			pathLabel.setText(Constants.OPEN_DIALOG_NO_DIR_SELECTED);
+		} else {
+			Path path = Paths.get(selectedDirectory.getAbsolutePath());
+			Files.list(path).filter(f -> f.toString().endsWith(Constants.SUFFIX_PROPERTIES)).forEach(filepath -> {
+				addNewFile(filepath);
+			});
+			pathLabel.setText(selectedDirectory.getAbsolutePath());
+			okSelection = true;
+
+			saveUserPreferences();
+
+			dialogStage.close();
 		}
-		Path path = Paths.get(selectedDirectory.getAbsolutePath());
-		Files.list(path).filter(f -> f.toString().endsWith(Constants.SUFFIX_PROPERTIES)).forEach(filepath -> {
-			addNewFile(filepath);
-		});
-		pathLabel.setText(selectedDirectory.getAbsolutePath());
-		okSelection = true;
-
-		saveUserPreferences();
-
-		dialogStage.close();
 	}
 
 	private void addNewFileHolder(File file) {

@@ -29,6 +29,7 @@ public class Item implements Comparable<Item> {
 		this.key = key;
 	}
 
+	@Override
 	public int compareTo(Item anotherItem) {
 		return anotherItem.getKey().compareTo(this.key);
 	}

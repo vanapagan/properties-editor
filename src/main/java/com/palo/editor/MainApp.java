@@ -41,7 +41,7 @@ public class MainApp extends Application {
 	private Stage primaryStage;
 	private BorderPane rootLayout;
 
-	public ObservableList<Item> items;
+	private ObservableList<Item> items;
 
 	@Override
 	public void start(Stage primaryStage) throws IOException {
@@ -74,7 +74,7 @@ public class MainApp extends Application {
 	}
 
 	private Map<String, Item> mapProperties() {
-		Map<String, Item> map = new HashMap<String, Item>();
+		Map<String, Item> map = new HashMap<>();
 		PreferencesSingleton.getInstace().getFileHolders().stream().forEach(fileholder -> {
 			Properties prop = new Properties();
 			InputStream input = null;
