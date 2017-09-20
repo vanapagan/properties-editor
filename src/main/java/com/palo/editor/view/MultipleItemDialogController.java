@@ -5,19 +5,15 @@ import com.palo.editor.model.Translation;
 import com.palo.util.PreferencesSingleton;
 
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 
 public class MultipleItemDialogController {
 
@@ -53,45 +49,25 @@ public class MultipleItemDialogController {
 	private ObservableList<Item> itemsList;
 
 	private boolean okClicked = false;
-	
+
 	private boolean isNew = false;
 
 	@FXML
 	private void initialize() {
-		keyCol.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Item, String>, ObservableValue<String>>() {
-			public ObservableValue<String> call(TableColumn.CellDataFeatures<Item, String> e) {
-				return new SimpleStringProperty(e.getValue().getKey());
-			}
-		});
+		keyCol.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().getKey()));
 		keyCol.setCellFactory(TextFieldTableCell.forTableColumn());
-		keyCol.setOnEditCommit(new EventHandler<CellEditEvent<Item, String>>() {
-			@Override
-			public void handle(CellEditEvent<Item, String> t) {
-				t.getTableView().getItems().get(t.getTablePosition().getRow()).setKey(t.getNewValue());
-			}
-		});
-		langCol.setCellValueFactory(
-				new Callback<TableColumn.CellDataFeatures<Translation, String>, ObservableValue<String>>() {
-					public ObservableValue<String> call(TableColumn.CellDataFeatures<Translation, String> e) {
-						return new SimpleStringProperty(e.getValue().getLanguage());
-					}
-				});
-		valueCol.setCellValueFactory(
-				new Callback<TableColumn.CellDataFeatures<Translation, String>, ObservableValue<String>>() {
-					public ObservableValue<String> call(TableColumn.CellDataFeatures<Translation, String> e) {
-						return new SimpleStringProperty(e.getValue().getValue());
-					}
-				});
+		keyCol.setOnEditCommit(t -> t.getTableView().getItems().get(t.getTablePosition().getRow())
+				.setKey(t.getNewValue()));
+		langCol.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().getLanguage()));
+
+		valueCol.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().getValue()));
 		valueCol.setCellFactory(TextFieldTableCell.forTableColumn());
-		valueCol.setOnEditCommit(new EventHandler<CellEditEvent<Translation, String>>() {
-			@Override
-			public void handle(CellEditEvent<Translation, String> t) {
-				t.getTableView().getItems().get(t.getTablePosition().getRow()).setValue(t.getNewValue());
-			}
-		});
-		for (String langName : PreferencesSingleton.getInstace().getTranslationsList()) {
-			translationsTable.getItems().add(new Translation(langName, ""));
-		}
+		valueCol.setOnEditCommit(t -> t.getTableView().getItems().get(t.getTablePosition().getRow())
+				.setValue(t.getNewValue()));
+
+		PreferencesSingleton.getInstace().getTranslationsList()
+				.forEach(langName -> translationsTable.getItems().add(new Translation(langName, "")));
+
 		keysTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
 			if (isNew && newSelection != null) {
 				removeKeyButton.setDisable(false);
@@ -104,19 +80,16 @@ public class MultipleItemDialogController {
 	}
 
 	public void setItemsList(ObservableList<Item> selectedItemsList, boolean isNew) {
-
 		this.itemsList = selectedItemsList;
 		this.isNew = isNew;
-		
+
 		if (!isNew) {
 			addKeyButton.setDisable(true);
 		}
 
 		ObservableList<Translation> translations = FXCollections.observableArrayList();
-		for (String language : PreferencesSingleton.getInstace().getTranslationsList()) {
-			String value = "";
-			translations.add(new Translation(language, value));
-		}
+		PreferencesSingleton.getInstace().getTranslationsList().stream()
+				.forEach(language -> translations.add(new Translation(language, "")));
 
 		keysTable.setItems(itemsList);
 		translationsTable.setItems(translations);
@@ -125,18 +98,14 @@ public class MultipleItemDialogController {
 	@FXML
 	public void handleAddKey() {
 		Item item = new Item("");
-		for (String s : PreferencesSingleton.getInstace().getTranslationsList()) {
-			item.getValuesMap().put(s, "");
-		}
+		PreferencesSingleton.getInstace().getTranslationsList().stream().forEach(s -> item.getValuesMap().put(s, ""));
 		keysTable.getItems().add(item);
 	}
 
 	@FXML
 	public void handleRemoveKey() {
-		ObservableList<Item> selectedItemsList = keysTable.getSelectionModel().getSelectedItems();
-		for (Item selectedItem : selectedItemsList) {
-			itemsList.remove(selectedItem);
-		}
+		keysTable.getSelectionModel().getSelectedItems().stream()
+				.forEach(selectedItem -> itemsList.remove(selectedItem));
 	}
 
 	public boolean isOkClicked() {
@@ -145,11 +114,11 @@ public class MultipleItemDialogController {
 
 	@FXML
 	private void handleConfirmation() {
-		for (Translation t : translationsTable.getItems()) {
+		translationsTable.getItems().stream().forEach(t -> {
 			itemsList.stream().forEach(item -> {
 				item.getValuesMap().put(t.getLanguage(), t.getValue());
 			});
-		}
+		});
 		okClicked = true;
 		dialogStage.close();
 	}
