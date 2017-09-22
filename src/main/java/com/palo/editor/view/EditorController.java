@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.Properties;
@@ -215,7 +216,13 @@ class SortedProperties extends Properties {
 		while (keysEnum.hasMoreElements()) {
 			keyList.add((String) keysEnum.nextElement());
 		}
-		Collections.sort(keyList);
+		Collections.sort(keyList, new Comparator() {
+			@Override
+			public int compare(Object o1, Object o2) {
+				return o1.toString().toLowerCase().compareTo(o2.toString().toLowerCase());
+			}
+		});
+		
 		return keyList.elements();
 	}
 
