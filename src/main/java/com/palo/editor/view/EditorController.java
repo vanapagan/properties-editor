@@ -52,25 +52,23 @@ public class EditorController {
 		TableColumn<Item, String> keyColumn = new TableColumn<Item, String>("Key");
 		keyColumn.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().getKey()));
 		keyColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-		keyColumn.setOnEditCommit(e -> e.getTableView().getItems().get(e.getTablePosition().getRow())
-				.setKey(e.getNewValue()));
+		keyColumn.setOnEditCommit(
+				e -> {
+					// TODO bug here
+					if (!mainApp.getItems().stream().anyMatch(existingItem -> existingItem.getKey().equals(e.getNewValue()))) {
+						e.getTableView().getItems().get(e.getTablePosition().getRow()).setKey(e.getNewValue());
+					}
+				});
 		itemTable.getColumns().add(keyColumn);
 
-		PreferencesSingleton
-				.getInstace()
-				.getTranslationsList()
-				.stream()
-				.forEach(
-						filename -> {
-							TableColumn<Item, String> languageColumn = new TableColumn<Item, String>(filename);
-							languageColumn.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().fetchValue(
-									filename)));
-							languageColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-							languageColumn.setOnEditCommit(e -> e.getTableView().getItems()
-									.get(e.getTablePosition().getRow()).getValuesMap()
-									.put(e.getTableColumn().getText(), e.getNewValue()));
-							itemTable.getColumns().add(languageColumn);
-						});
+		PreferencesSingleton.getInstace().getTranslationsList().stream().forEach(filename -> {
+			TableColumn<Item, String> languageColumn = new TableColumn<Item, String>(filename);
+			languageColumn.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().fetchValue(filename)));
+			languageColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+			languageColumn.setOnEditCommit(e -> e.getTableView().getItems().get(e.getTablePosition().getRow())
+					.getValuesMap().put(e.getTableColumn().getText(), e.getNewValue()));
+			itemTable.getColumns().add(languageColumn);
+		});
 
 		itemTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
 			if (newSelection != null) {
@@ -122,7 +120,9 @@ public class EditorController {
 		});
 		boolean okClicked = mainApp.showSingleItemDialog(item, Constants.EDITOR_ADD_NEW_TITLE);
 		if (okClicked) {
-			mainApp.getItems().add(item);
+			if (!mainApp.getItems().stream().anyMatch(existingItem -> existingItem.getKey().equals(item.getKey()))) {
+				mainApp.getItems().add(item);
+			}
 		}
 	}
 
@@ -138,7 +138,10 @@ public class EditorController {
 		boolean okClicked = mainApp.showMultipleItemDialog(newItemsList, Constants.EDITOR_ADD_NEW_TITLE, true);
 		if (okClicked) {
 			newItemsList.stream().forEach(newItem -> {
-				mainApp.getItems().add(newItem);
+				if (!mainApp.getItems().stream()
+						.anyMatch(existingItem -> existingItem.getKey().equals(newItem.getKey()))) {
+					mainApp.getItems().add(item);
+				}
 			});
 		}
 	}
@@ -161,7 +164,5 @@ public class EditorController {
 		itemTable.getSelectionModel().getSelectedItems().stream()
 				.forEach(selectedItem -> mainApp.getItems().remove(selectedItem));
 	}
-	
+
 }
-
-
