@@ -28,6 +28,10 @@ public class Constants {
 	
 	public static final String EXTENSION_PROPERTIES = ".properties";
 	
+	public static final String OPERATOR_EQUALS = "=";
+	
+	public static final String NEW_LINE = "\n";
+	
 	private Constants() {
 	}
 
