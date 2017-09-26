@@ -26,7 +26,7 @@ public class Constants {
 	public static final String OPEN_DIALOG_NO_DIR_SELECTED = "No directory selected";
 	public static final String OPEN_DIALOG_FILES_SELECTED = "files selected";
 	
-	public static final String SUFFIX_PROPERTIES = ".properties";
+	public static final String EXTENSION_PROPERTIES = ".properties";
 	
 	private Constants() {
 	}

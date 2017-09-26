@@ -51,13 +51,21 @@ public class OpenDialogController {
 		ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Properties files", "properties");
 		fileChooser.setSelectedExtensionFilter(extFilter);
 		List<File> selectedFilesList = fileChooser.showOpenMultipleDialog(dialogStage);
-		selectedFilesList.stream().forEach(f -> addNewFileHolder(f));
-		pathLabel.setText(selectedFilesList.size() + " " + Constants.OPEN_DIALOG_FILES_SELECTED);
-		okSelection = true;
+		if (selectedFilesList == null) {
+			pathLabel.setText(Constants.OPEN_DIALOG_NO_DIR_SELECTED);
+		} else {
+			// TODO empty current preferences
+			PreferencesSingleton.getInstace().truncateAll();
+			
+			selectedFilesList.stream().forEach(f -> addNewFileHolder(f));
+			pathLabel.setText(selectedFilesList.size() + " " + Constants.OPEN_DIALOG_FILES_SELECTED);
+			okSelection = true;
 
-		saveUserPreferences();
+			saveUserPreferences();
 
-		dialogStage.close();
+			dialogStage.close();
+		}
+
 	}
 
 	@FXML
@@ -67,8 +75,11 @@ public class OpenDialogController {
 		if (selectedDirectory == null) {
 			pathLabel.setText(Constants.OPEN_DIALOG_NO_DIR_SELECTED);
 		} else {
+			// TODO empty current .properties list
+			PreferencesSingleton.getInstace().truncateAll();
+
 			Path path = Paths.get(selectedDirectory.getAbsolutePath());
-			Files.list(path).filter(f -> f.toString().endsWith(Constants.SUFFIX_PROPERTIES)).forEach(filepath -> {
+			Files.list(path).filter(f -> f.toString().endsWith(Constants.EXTENSION_PROPERTIES)).forEach(filepath -> {
 				addNewFile(filepath);
 			});
 			pathLabel.setText(selectedDirectory.getAbsolutePath());
@@ -85,7 +96,7 @@ public class OpenDialogController {
 	}
 
 	private void addNewFile(Path filepath) {
-		String name = filepath.getFileName().toString().replace(Constants.SUFFIX_PROPERTIES, "");
+		String name = filepath.getFileName().toString().replace(Constants.EXTENSION_PROPERTIES, "");
 		String pathLiteral = filepath.toString();
 		PreferencesSingleton.getInstace().getFileHolders().add(new FileHolder(name, pathLiteral));
 	}

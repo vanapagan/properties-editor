@@ -26,5 +26,10 @@ public class PreferencesSingleton {
 	public List<FileHolder> getFileHolders() {
 		return fileHolders;
 	}
+	
+	public void truncateAll() {
+		fileHolders.clear();
+		translationsList.clear();
+	}
 
 }

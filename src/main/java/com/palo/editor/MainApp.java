@@ -23,6 +23,7 @@ import com.palo.editor.view.EditorController;
 import com.palo.editor.view.MultipleItemDialogController;
 import com.palo.editor.view.SingleItemDialogController;
 import com.palo.editor.view.OpenDialogController;
+import com.palo.editor.view.RootLayoutController;
 import com.palo.util.Constants;
 import com.palo.util.PreferencesSingleton;
 
@@ -73,7 +74,7 @@ public class MainApp extends Application {
 		}
 	}
 
-	private Map<String, Item> mapProperties() {
+	public Map<String, Item> mapProperties() {
 		Map<String, Item> map = new HashMap<>();
 		PreferencesSingleton.getInstace().getFileHolders().stream().forEach(fileholder -> {
 			Properties prop = new Properties();
@@ -115,12 +116,14 @@ public class MainApp extends Application {
 		Scene scene = new Scene(rootLayout);
 		primaryStage.setScene(scene);
 		primaryStage.show();
+		RootLayoutController controller = loader.getController();
+		controller.setMainApp(this);
 	}
 
-	private void showEditor() throws IOException {
+	public void showEditor() throws IOException {
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(MainApp.class.getResource(Constants.VIEW_EDITOR));
-		AnchorPane personOverview = (AnchorPane) loader.load();
+		AnchorPane personOverview = loader.load();
 		rootLayout.setCenter(personOverview);
 		EditorController controller = loader.getController();
 		controller.setMainApp(this);
@@ -130,7 +133,7 @@ public class MainApp extends Application {
 			throws IOException {
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(MainApp.class.getResource(Constants.VIEW_SINGLE_ITEM_DIALOG));
-		AnchorPane page = (AnchorPane) loader.load();
+		AnchorPane page = loader.load();
 
 		Stage dialogStage = new Stage();
 		dialogStage.setTitle(title + " " + Constants.ITEM_DIALOG_TITLE_KEY);
@@ -152,7 +155,7 @@ public class MainApp extends Application {
 			throws IOException {
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(MainApp.class.getResource(Constants.VIEW_MULTIPLE_ITEM_DIALOG));
-		AnchorPane page = (AnchorPane) loader.load();
+		AnchorPane page = loader.load();
 
 		Stage dialogStage = new Stage();
 		dialogStage.setTitle(title + " " + Constants.ITEM_DIALOG_TITLE_KEYS);
@@ -173,7 +176,7 @@ public class MainApp extends Application {
 	public boolean showOpenDialog() throws IOException {
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(MainApp.class.getResource(Constants.VIEW_OPEN_DIALOG));
-		AnchorPane page = (AnchorPane) loader.load();
+		AnchorPane page = loader.load();
 
 		Stage dialogStage = new Stage();
 		dialogStage.initModality(Modality.WINDOW_MODAL);
@@ -195,6 +198,10 @@ public class MainApp extends Application {
 
 	public ObservableList<Item> getItems() {
 		return items;
+	}
+
+	public void setItems(ObservableList<Item> items) {
+		this.items = items;
 	}
 
 	public static void main(String[] args) {
