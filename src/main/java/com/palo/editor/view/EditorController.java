@@ -13,6 +13,7 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.TextFieldTableCell;
@@ -37,6 +38,9 @@ public class EditorController {
 	private Button deleteButton;
 
 	@FXML
+	private ComboBox<String> filterCombo;
+
+	@FXML
 	private TableView<Item> itemTable;
 
 	private MainApp mainApp;
@@ -48,17 +52,15 @@ public class EditorController {
 
 	@FXML
 	private void initialize() {
-
 		TableColumn<Item, String> keyColumn = new TableColumn<Item, String>("Key");
 		keyColumn.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().getKey()));
 		keyColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-		keyColumn.setOnEditCommit(
-				e -> {
-					// TODO bug here
-					if (!mainApp.getItems().stream().anyMatch(existingItem -> existingItem.getKey().equals(e.getNewValue()))) {
-						e.getTableView().getItems().get(e.getTablePosition().getRow()).setKey(e.getNewValue());
-					}
-				});
+		keyColumn.setOnEditCommit(e -> {
+			// TODO bug here
+			if (!mainApp.getItems().stream().anyMatch(existingItem -> existingItem.getKey().equals(e.getNewValue()))) {
+				e.getTableView().getItems().get(e.getTablePosition().getRow()).setKey(e.getNewValue());
+			}
+		});
 		itemTable.getColumns().add(keyColumn);
 
 		PreferencesSingleton.getInstace().getTranslationsList().stream().forEach(filename -> {
@@ -90,6 +92,13 @@ public class EditorController {
 		editButton.setDisable(true);
 		deleteButton.setDisable(true);
 
+		// TODO init filter combo
+		ObservableList<String> filtersList = FXCollections.observableArrayList();
+		filtersList.add("Keys");
+		filtersList.add("Values");
+		filtersList.add("Keys + Values");
+		filterCombo.setItems(filtersList);
+
 	}
 
 	public void setMainApp(MainApp mainApp) {
@@ -100,9 +109,23 @@ public class EditorController {
 				if (newValue == null || newValue.isEmpty()) {
 					return true;
 				}
+				// TODO handle different filters
 				String lowerCaseFilter = newValue.toLowerCase();
-				if (item.getKey().toLowerCase().contains(lowerCaseFilter)) {
-					return true;
+				String filter = filterCombo.getValue();
+				if ("Keys + Values".equals(filter)) {
+					if (item.getKey().toLowerCase().contains(lowerCaseFilter) || item.getValuesMap().values().stream()
+							.anyMatch(val -> val.toLowerCase().contains(lowerCaseFilter))) {
+						return true;
+					}
+				} else if ("Keys".equals(filter)) {
+					if (item.getKey().toLowerCase().contains(lowerCaseFilter)) {
+						return true;
+					}
+				} else if ("Values".equals(filter)) {
+					if (item.getValuesMap().values().stream()
+							.anyMatch(val -> val.toLowerCase().contains(lowerCaseFilter))) {
+						return true;
+					}
 				}
 				return false;
 			});
