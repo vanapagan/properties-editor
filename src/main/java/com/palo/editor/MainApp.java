@@ -1,10 +1,13 @@
 package com.palo.editor;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringReader;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,6 +15,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -77,20 +81,19 @@ public class MainApp extends Application {
 	public Map<String, Item> mapProperties() {
 		Map<String, Item> map = new HashMap<>();
 		PreferencesSingleton.getInstace().getFileHolders().stream().forEach(fileholder -> {
-			Properties prop = new Properties();
-			InputStream input = null;
-			try {
-				Path path = Paths.get(fileholder.getPath());
-				input = Files.newInputStream(path);
-				prop.load(new InputStreamReader(input, StandardCharsets.UTF_8));
+			Properties properties = new Properties();
+			Path path = Paths.get(fileholder.getPath());
+			try (InputStream inputStream = Files.newInputStream(path)) {
+				String fileContent = convert(inputStream, StandardCharsets.UTF_8);
+				properties.load(new StringReader(fileContent.replace(Constants.BACKSLASH_COLON, Constants.ESCAPED_BACKSLASH_COLON)));
 			} catch (IOException e) {
 				e.printStackTrace();
-			}
+			}		
 			String translation = fileholder.getName();
 			PreferencesSingleton.getInstace().getTranslationsList().add(translation);
-			prop.keySet().stream().forEach(k -> {
+			properties.keySet().stream().forEach(k -> {
 				String key = (String) k;
-				String value = prop.getProperty(key);
+				String value = properties.getProperty(key);
 				Item item = map.get(key);
 				if (item == null) {
 					item = new Item(key);
@@ -98,13 +101,6 @@ public class MainApp extends Application {
 				}
 				item.addNewValue(translation, value);
 			});
-			if (input != null) {
-				try {
-					input.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
 		});
 		return map;
 	}
@@ -190,6 +186,12 @@ public class MainApp extends Application {
 		dialogStage.showAndWait();
 
 		return controller.isOkSelection();
+	}
+	
+	private String convert(InputStream inputStream, Charset charset) throws IOException {
+		try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, charset))) {
+			return br.lines().collect(Collectors.joining(System.lineSeparator()));
+		}
 	}
 
 	public Stage getPrimaryStage() {

@@ -48,7 +48,7 @@ public class RootLayoutController {
 				sb.append(line.trim());
 				sb.append(Constants.NEW_LINE);
 			});
-			sb.setLength(sb.length() - 2);
+			sb.setLength(sb.length() - 1);
 
 			FileHolder fileholder = PreferencesSingleton.getInstace().getFileHolders().stream()
 					.filter(fh -> s.equals(fh.getName())).collect(Collectors.toList()).get(0);
