@@ -13,6 +13,7 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.TextFieldTableCell;
@@ -25,10 +26,10 @@ public class EditorController {
 	private TextField filterField;
 
 	@FXML
-	private Button newSingleButton;
+	private MenuItem newSingleMenuItem;
 
 	@FXML
-	private Button newMultipleButton;
+	private MenuItem newMultipleMenuItem;
 
 	@FXML
 	private Button editButton;
