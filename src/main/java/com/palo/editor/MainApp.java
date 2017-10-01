@@ -36,6 +36,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.TableView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
@@ -47,6 +48,8 @@ public class MainApp extends Application {
 	private BorderPane rootLayout;
 
 	private ObservableList<Item> items;
+	
+	private TableView<Item> itemTable;
 
 	@Override
 	public void start(Stage primaryStage) throws IOException {
@@ -204,6 +207,14 @@ public class MainApp extends Application {
 
 	public void setItems(ObservableList<Item> items) {
 		this.items = items;
+	}
+	
+	public void setItemTable(TableView<Item> itemTable) {
+		this.itemTable = itemTable;
+	}
+	
+	public TableView<Item> getItemTable() {
+		return itemTable;
 	}
 
 	public static void main(String[] args) {

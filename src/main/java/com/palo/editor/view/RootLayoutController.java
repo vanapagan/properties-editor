@@ -16,12 +16,26 @@ import com.palo.util.PreferencesSingleton;
 
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.MenuItem;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 public class RootLayoutController {
 
 	@FXML
 	private MenuItem openMenuItem;
+	
+	@FXML
+	private MenuItem addLanguageMenuItem;
+	
+	@FXML
+	private MenuItem removeLanguageMenuItem;
+	
+	@FXML
+	private MenuItem preferencesMenuItem;
 
 	@FXML
 	private MenuItem aboutMenuItem;
@@ -41,7 +55,6 @@ public class RootLayoutController {
 	@FXML
 	private void handleSave() throws FileNotFoundException, IOException {
 		PreferencesSingleton.getInstace().getTranslationsList().stream().forEach(s -> {
-
 			StringBuilder sb = new StringBuilder();
 			mainApp.getItems().stream().sorted(Item::compareTo).forEach(item -> {
 				String line = String.join(Constants.OPERATOR_EQUALS, item.getKey(), item.fetchValue(s));
@@ -63,6 +76,40 @@ public class RootLayoutController {
 				e.printStackTrace();
 			}
 		});
+	}
+	
+	@FXML
+	private void handleAddLanguage() {
+		
+	}
+	
+	@FXML
+	private void handleRemoveLanguage() throws IOException {
+		FXMLLoader loader = new FXMLLoader();
+		loader.setLocation(MainApp.class.getResource("view/RemoveLanguageDialog.fxml"));
+		AnchorPane page = loader.load();
+
+		Stage dialogStage = new Stage();
+		dialogStage.initModality(Modality.WINDOW_MODAL);
+		dialogStage.initOwner(mainApp.getPrimaryStage());
+		Scene scene = new Scene(page);
+		dialogStage.setScene(scene);
+
+		RemoveLanguageDialogController controller = loader.getController();
+		controller.setDialogStage(dialogStage);
+		controller.setMainApp(mainApp);
+
+		dialogStage.showAndWait();
+	}
+	
+	@FXML
+	private void handlePreferencesDialog() {
+		
+	}
+	
+	@FXML
+	private void handleAboutDialog() {
+		
 	}
 
 	public void setMainApp(MainApp mainApp) {

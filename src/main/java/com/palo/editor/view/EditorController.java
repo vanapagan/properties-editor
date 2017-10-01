@@ -107,6 +107,7 @@ public class EditorController {
 				return false;
 			});
 		});
+		mainApp.setItemTable(itemTable);
 		sortedData = new SortedList<>(filteredData);
 		sortedData.comparatorProperty().bind(itemTable.comparatorProperty());
 		itemTable.setItems(sortedData);
@@ -163,6 +164,10 @@ public class EditorController {
 	private void handleDelete() {
 		itemTable.getSelectionModel().getSelectedItems().stream()
 				.forEach(selectedItem -> mainApp.getItems().remove(selectedItem));
+	}
+	
+	public void removeLanguageColumn(String lang) {
+		itemTable.getColumns().remove(lang);
 	}
 
 }

@@ -23,6 +23,22 @@
                   </MenuItem>
             </items>
           </Menu>
+            <Menu mnemonicParsing="false" text="Language">
+              <items>
+                  <MenuItem fx:id="addLanguageMenuItem" mnemonicParsing="false" onAction="#handleAddLanguage" text="Add" />
+                <MenuItem fx:id="removeLanguageMenuItem" mnemonicParsing="false" onAction="#handleRemoveLanguage" text="Remove" />
+              </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Window">
+              <items>
+                <MenuItem fx:id="preferencesMenuItem" mnemonicParsing="false" onAction="#handlePreferencesDialog" text="Preferences" />
+              </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Help">
+              <items>
+                <MenuItem fx:id="aboutMenuItem" mnemonicParsing="false" onAction="#handleAboutDialog" text="About" />
+              </items>
+            </Menu>
         </menus>
       </MenuBar>
    </top>
