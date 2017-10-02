@@ -66,6 +66,7 @@ public class EditorController {
 			languageColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 			languageColumn.setOnEditCommit(e -> e.getTableView().getItems().get(e.getTablePosition().getRow())
 					.getValuesMap().put(e.getTableColumn().getText(), e.getNewValue()));
+			languageColumn.setId(filename);
 			itemTable.getColumns().add(languageColumn);
 		});
 
@@ -85,6 +86,7 @@ public class EditorController {
 		itemTable.getSortOrder().add(keyColumn);
 
 		itemTable.setEditable(true);
+		itemTable.setTableMenuButtonVisible(true);
 
 		editButton.setDisable(true);
 		deleteButton.setDisable(true);

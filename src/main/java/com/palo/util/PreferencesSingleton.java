@@ -22,9 +22,17 @@ public class PreferencesSingleton {
 	public List<String> getTranslationsList() {
 		return translationsList;
 	}
+	
+	public void setTranslationsList(List<String> translationsList) {
+		this.translationsList = translationsList;
+	}
 
 	public List<FileHolder> getFileHolders() {
 		return fileHolders;
+	}
+	
+	public void setFileHolders(List<FileHolder> fileHolders) {
+		this.fileHolders = fileHolders;
 	}
 	
 	public void truncateAll() {

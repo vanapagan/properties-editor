@@ -3,10 +3,14 @@ package com.palo.editor.view;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import com.palo.editor.MainApp;
 import com.palo.editor.model.FileHolder;
@@ -72,6 +76,22 @@ public class RootLayoutController {
 				output.write(sb.toString());
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			JSONArray jsonArr = new JSONArray();
+			PreferencesSingleton.getInstace().getFileHolders().stream().forEach(fh -> {
+				JSONObject jsonObj = new JSONObject();
+				jsonObj.put(Constants.PREFERENCES_FILENAME, fh.getName());
+				jsonObj.put(Constants.PREFERENCES_PATH, fh.getPath());
+				jsonArr.put(jsonObj);
+			});
+			FileWriter fw;
+			try {
+				fw = new FileWriter(Constants.PREFERENCES_FILE_LOCATION);
+				fw.write(jsonArr.toString());
+				fw.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

@@ -1,11 +1,11 @@
 package com.palo.editor.view;
 
+import java.util.stream.Collectors;
+
 import com.palo.editor.MainApp;
 import com.palo.editor.model.Item;
 import com.palo.util.PreferencesSingleton;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -13,26 +13,25 @@ import javafx.scene.control.TableColumn;
 import javafx.stage.Stage;
 
 public class RemoveLanguageDialogController {
-	
+
 	@FXML
 	private ComboBox<String> languageCombo;
-	
+
 	@FXML
 	private Button confirmationButton;
-	
+
 	@FXML
 	private Button cancelButton;
 
 	private boolean okClicked = false;
-	
-	private Stage dialogStage;
-	
-	private MainApp mainApp;
 
+	private Stage dialogStage;
+
+	private MainApp mainApp;
 
 	public RemoveLanguageDialogController() {
 	}
-	
+
 	@FXML
 	private void initialize() {
 	}
@@ -44,15 +43,24 @@ public class RemoveLanguageDialogController {
 		mainApp.getItems().parallelStream().forEach(item -> {
 			item.getValuesMap().remove(selectedLanguage);
 		});
-		TableColumn<Item, String> tableCol;
-		mainApp.getItemTable().getColumns().stream().forEach(column -> {
-			String columnId = column.getId();
-			if (selectedLanguage.equals(columnId)) {
+
+		Integer index = null;
+		for (int i = 1; i < mainApp.getItemTable().getColumns().size(); i++) {
+			TableColumn<Item, ?> column = mainApp.getItemTable().getColumns().get(i);
+			if (selectedLanguage.equals(column.getId())) {
+				index = i;
 			}
-		});
-		
-		mainApp.getItemTable().getColumns().remove(selectedLanguage);
-		mainApp.getItemTable().refresh();
+		}
+
+		if (index != null) {
+			mainApp.getItemTable().getColumns().remove(index.intValue());
+		}
+
+		PreferencesSingleton.getInstace().setFileHolders(PreferencesSingleton.getInstace().getFileHolders().stream()
+				.filter(fh -> !fh.getName().equals(selectedLanguage)).collect(Collectors.toList()));
+		PreferencesSingleton.getInstace().setTranslationsList(PreferencesSingleton.getInstace().getTranslationsList()
+				.stream().filter(t -> !t.equals(selectedLanguage)).collect(Collectors.toList()));
+
 		dialogStage.close();
 	}
 
@@ -63,7 +71,7 @@ public class RemoveLanguageDialogController {
 
 	public void setMainApp(MainApp mainApp) {
 		this.mainApp = mainApp;
-		PreferencesSingleton.getInstace().getTranslationsList().stream().forEach(lang-> {
+		PreferencesSingleton.getInstace().getTranslationsList().stream().forEach(lang -> {
 			languageCombo.getItems().add(lang);
 		});
 	}
