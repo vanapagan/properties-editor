@@ -1,25 +1,21 @@
 package com.palo.editor;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringReader;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+
 
 import com.palo.editor.model.FileHolder;
 import com.palo.editor.model.Item;
@@ -30,6 +26,7 @@ import com.palo.editor.view.OpenDialogController;
 import com.palo.editor.view.RootLayoutController;
 import com.palo.util.Constants;
 import com.palo.util.PreferencesSingleton;
+
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -84,26 +81,31 @@ public class MainApp extends Application {
 	public Map<String, Item> mapProperties() {
 		Map<String, Item> map = new HashMap<>();
 		PreferencesSingleton.getInstace().getFileHolders().stream().forEach(fileholder -> {
-			Properties properties = new Properties();
 			Path path = Paths.get(fileholder.getPath());
-			try (InputStream inputStream = Files.newInputStream(path)) {
-				String fileContent = convert(inputStream, StandardCharsets.UTF_8);
-				properties.load(new StringReader(fileContent.replace(Constants.BACKSLASH_COLON, Constants.ESCAPED_BACKSLASH_COLON)));
+			// TODO stream file line by line
+			try (Stream<String> stream = Files.lines(path, StandardCharsets.UTF_8)) {
+				String translation = fileholder.getName();
+				PreferencesSingleton.getInstace().getTranslationsList().add(translation);
+				stream.forEach(line -> {
+					String[] lineContent = line.split(Constants.OPERATOR_EQUALS, 2);
+					String key = "";
+					String value = "";
+					if (lineContent.length > 0) {
+						key = lineContent[0].trim();
+					}
+					if (lineContent.length > 1) {
+						value = lineContent[1].trim();
+					}
+					Item item = map.get(key);
+					if (item == null) {
+						item = new Item(key);
+						map.put(key, item);
+					}
+					item.addNewValue(translation, value);
+				});
 			} catch (IOException e) {
 				e.printStackTrace();
-			}		
-			String translation = fileholder.getName();
-			PreferencesSingleton.getInstace().getTranslationsList().add(translation);
-			properties.keySet().stream().forEach(k -> {
-				String key = (String) k;
-				String value = properties.getProperty(key);
-				Item item = map.get(key);
-				if (item == null) {
-					item = new Item(key);
-					map.put(key, item);
-				}
-				item.addNewValue(translation, value);
-			});
+			}
 		});
 		return map;
 	}
@@ -189,12 +191,6 @@ public class MainApp extends Application {
 		dialogStage.showAndWait();
 
 		return controller.isOkSelection();
-	}
-	
-	private String convert(InputStream inputStream, Charset charset) throws IOException {
-		try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, charset))) {
-			return br.lines().collect(Collectors.joining(System.lineSeparator()));
-		}
 	}
 
 	public Stage getPrimaryStage() {

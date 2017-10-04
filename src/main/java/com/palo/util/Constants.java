@@ -32,9 +32,6 @@ public class Constants {
 	
 	public static final String NEW_LINE = "\n";
 	
-	public static final String BACKSLASH_COLON = "\\:";
-	public static final String ESCAPED_BACKSLASH_COLON = "\\\\:";
-	
 	private Constants() {
 	}
 
