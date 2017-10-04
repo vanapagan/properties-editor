@@ -46,7 +46,8 @@ public class SingleItemDialogController {
 		langCol.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().getLanguage()));
 		valueCol.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().getValue()));
 		valueCol.setCellFactory(TextFieldTableCell.forTableColumn());
-		valueCol.setOnEditCommit(t -> t.getTableView().getItems().get(t.getTablePosition().getRow()).setValue(t.getNewValue()));
+		valueCol.setOnEditCommit(t -> t.getTableView().getItems().get(t.getTablePosition().getRow())
+				.setValue(t.getNewValue()));
 		PreferencesSingleton.getInstace().getTranslationsList().stream().forEach(t -> {
 			translationsTable.getItems().add(new Translation(t, ""));
 		});

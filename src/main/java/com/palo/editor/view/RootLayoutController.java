@@ -63,9 +63,9 @@ public class RootLayoutController {
 			mainApp.getItems().stream().sorted(Item::compareTo).forEach(item -> {
 				String line = String.join(Constants.OPERATOR_EQUALS, item.getKey(), item.fetchValue(s));
 				sb.append(line.trim());
-				sb.append(Constants.NEW_LINE);
+				sb.append(System.getProperty("line.separator"));
 			});
-			sb.setLength(sb.length() - 1);
+			sb.setLength(sb.length() - 2);
 
 			FileHolder fileholder = PreferencesSingleton.getInstace().getFileHolders().stream()
 					.filter(fh -> s.equals(fh.getName())).collect(Collectors.toList()).get(0);

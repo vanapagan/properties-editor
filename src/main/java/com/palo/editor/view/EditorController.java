@@ -143,7 +143,7 @@ public class EditorController {
 			newItemsList.stream().forEach(newItem -> {
 				if (!mainApp.getItems().stream()
 						.anyMatch(existingItem -> existingItem.getKey().equals(newItem.getKey()))) {
-					mainApp.getItems().add(item);
+					mainApp.getItems().add(newItem);
 				}
 			});
 		}
