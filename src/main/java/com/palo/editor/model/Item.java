@@ -31,7 +31,7 @@ public class Item implements Comparable<Item> {
 
 	@Override
 	public int compareTo(Item anotherItem) {
-		return this.key.toLowerCase().compareTo(anotherItem.getKey().toLowerCase());
+		return this.key.toLowerCase().compareToIgnoreCase(anotherItem.getKey().toLowerCase());
 	}
 
 	public Map<String, String> getValuesMap() {
