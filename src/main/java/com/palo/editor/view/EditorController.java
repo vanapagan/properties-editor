@@ -164,8 +164,7 @@ public class EditorController {
 
 	@FXML
 	private void handleDelete() {
-		itemTable.getSelectionModel().getSelectedItems().stream()
-				.forEach(selectedItem -> mainApp.getItems().remove(selectedItem));
+		mainApp.getItems().removeAll(itemTable.getSelectionModel().getSelectedItems());
 	}
 	
 	public void removeLanguageColumn(String lang) {
