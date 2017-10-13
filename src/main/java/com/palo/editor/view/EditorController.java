@@ -53,10 +53,12 @@ public class EditorController {
 		keyColumn.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().getKey()));
 		keyColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 		keyColumn.setOnEditCommit(e -> {
-			// TODO bug here
+			String value = e.getOldValue();
 			if (!mainApp.getItems().stream().anyMatch(existingItem -> existingItem.getKey().equals(e.getNewValue()))) {
-				e.getTableView().getItems().get(e.getTablePosition().getRow()).setKey(e.getNewValue());
+				value = e.getNewValue();
 			}
+			itemTable.getItems().get(e.getTablePosition().getRow()).setKey(value);
+			itemTable.refresh();
 		});
 		itemTable.getColumns().add(keyColumn);
 

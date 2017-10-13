@@ -82,7 +82,6 @@ public class MainApp extends Application {
 		Map<String, Item> map = new HashMap<>();
 		PreferencesSingleton.getInstace().getFileHolders().stream().forEach(fileholder -> {
 			Path path = Paths.get(fileholder.getPath());
-			// TODO stream file line by line
 			try (Stream<String> stream = Files.lines(path, StandardCharsets.UTF_8)) {
 				String translation = fileholder.getName();
 				PreferencesSingleton.getInstace().getTranslationsList().add(translation);
