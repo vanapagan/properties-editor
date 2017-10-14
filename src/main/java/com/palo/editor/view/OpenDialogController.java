@@ -75,7 +75,7 @@ public class OpenDialogController {
 		if (selectedDirectory == null) {
 			pathLabel.setText(Constants.OPEN_DIALOG_NO_DIR_SELECTED);
 		} else {
-			// TODO empty current .properties list
+			
 			PreferencesSingleton.getInstace().truncateAll();
 
 			Path path = Paths.get(selectedDirectory.getAbsolutePath());

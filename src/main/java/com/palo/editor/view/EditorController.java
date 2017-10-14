@@ -73,13 +73,11 @@ public class EditorController {
 		});
 
 		itemTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+			boolean status = true;
 			if (newSelection != null) {
-				editButton.setDisable(false);
-				deleteButton.setDisable(false);
-			} else {
-				editButton.setDisable(true);
-				deleteButton.setDisable(true);
+				status = false;
 			}
+			toggleModifying(status);
 		});
 
 		itemTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -87,12 +85,9 @@ public class EditorController {
 		keyColumn.setSortType(TableColumn.SortType.ASCENDING);
 		itemTable.getSortOrder().add(keyColumn);
 
-		itemTable.setEditable(true);
 		itemTable.setTableMenuButtonVisible(true);
-
-		editButton.setDisable(true);
-		deleteButton.setDisable(true);
-
+		
+		toggleModifying(true);
 	}
 
 	public void setMainApp(MainApp mainApp) {
@@ -167,6 +162,11 @@ public class EditorController {
 	@FXML
 	private void handleDelete() {
 		mainApp.getItems().removeAll(itemTable.getSelectionModel().getSelectedItems());
+	}
+	
+	private void toggleModifying(boolean status) {
+		editButton.setDisable(status);
+		deleteButton.setDisable(status);
 	}
 	
 	public void removeLanguageColumn(String lang) {
