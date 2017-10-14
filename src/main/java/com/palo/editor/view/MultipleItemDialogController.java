@@ -87,7 +87,6 @@ public class MultipleItemDialogController {
 		});
 		keysTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		removeKeyButton.setDisable(true);
-		
 	}
 
 	public void setItemsList(ObservableList<Item> selectedItemsList, boolean isNew) {
@@ -95,7 +94,9 @@ public class MultipleItemDialogController {
 		this.isNew = isNew;
 
 		if (!isNew) {
-			addKeyButton.setDisable(true);
+			addKeyButton.setVisible(false);
+			removeKeyButton.setVisible(false);
+			toggleButton.setVisible(false);
 		}
 
 		ObservableList<Translation> translations = FXCollections.observableArrayList();
@@ -130,7 +131,7 @@ public class MultipleItemDialogController {
 	@FXML
 	private void handleConfirmation() {
 		if (keysArea.isVisible()) {
-			splitTextAddNewKeys();
+			migrateToTableView();
 		}
 		translationsTable.getItems().stream().forEach(t -> {
 			itemsList.stream().forEach(item -> {
@@ -152,7 +153,7 @@ public class MultipleItemDialogController {
 			keysTable.setVisible(true);
 			keysArea.setVisible(false);
 			toggleButton.setText("Table");
-			splitTextAddNewKeys();
+			migrateToTableView();
 		}
 	}
 	
@@ -161,11 +162,11 @@ public class MultipleItemDialogController {
 		dialogStage.close();
 	}
 
-	private void splitTextAddNewKeys() {
+	private void migrateToTableView() {
 		String[] keysArr = keysArea.getText().split("\n");
 		for (int i = 0; i < keysArr.length; i++) {
 			String key = keysArr[i].trim();
-			if (!itemsList.stream().anyMatch(item -> item.getKey().equals(key))) {
+			if (!key.isEmpty() && !itemsList.stream().anyMatch(item -> item.getKey().equals(key))) {
 				handleAddKey(key);
 			}
 		}
