@@ -40,6 +40,6 @@
             <Button fx:id="removeKeyButton" mnemonicParsing="false" onAction="#handleRemoveKey" text="Remove" />
         </buttons>
       </ButtonBar>
-        <ToggleButton fx:id="toggleButton" layoutX="18.0" layoutY="149.0" maxWidth="-Infinity" minWidth="-Infinity" onAction="#toggle" prefWidth="63.0" text="TextArea" />
+        <ToggleButton fx:id="toggleButton" layoutX="18.0" layoutY="149.0" maxWidth="-Infinity" minWidth="-Infinity" onAction="#toggle" prefWidth="63.0" text="Table" />
    </children>
 </AnchorPane>

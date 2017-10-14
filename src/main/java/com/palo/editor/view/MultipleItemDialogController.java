@@ -79,11 +79,7 @@ public class MultipleItemDialogController {
 				.forEach(langName -> translationsTable.getItems().add(new Translation(langName, "")));
 
 		keysTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-			if (isNew && newSelection != null) {
-				removeKeyButton.setDisable(false);
-			} else {
-				removeKeyButton.setDisable(true);
-			}
+			removeKeyButton.setDisable(isNew && newSelection != null ? false : true);
 		});
 		keysTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		removeKeyButton.setDisable(true);
@@ -120,8 +116,7 @@ public class MultipleItemDialogController {
 
 	@FXML
 	public void handleRemoveKey() {
-		keysTable.getSelectionModel().getSelectedItems().stream()
-				.forEach(selectedItem -> itemsList.remove(selectedItem));
+		itemsList.removeAll(keysTable.getSelectionModel().getSelectedItems());
 	}
 
 	public boolean isOkClicked() {
@@ -144,18 +139,22 @@ public class MultipleItemDialogController {
 	
 	@FXML
 	private void toggle() {
-		if (keysTable.isVisible()) {
-			keysTable.setVisible(false);
-			keysArea.setVisible(true);
+		boolean state = keysTable.isVisible();
+		switchBetween(!state, state);
+		if (state) {
 			keysArea.setText(keysTable.getItems().stream().map(item -> item.getKey()).collect(Collectors.joining("\n")));
 			toggleButton.setText("TextArea");
 		} else {
-			keysTable.setVisible(true);
-			keysArea.setVisible(false);
 			toggleButton.setText("Table");
 			migrateToTableView();
 		}
 	}
+	
+	private void switchBetween(boolean tableState, boolean areaState) {
+		keysTable.setVisible(tableState);
+		keysArea.setVisible(areaState);
+	}
+
 	
 	@FXML
 	private void handleCancel() {
