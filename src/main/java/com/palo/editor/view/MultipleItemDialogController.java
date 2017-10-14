@@ -1,5 +1,7 @@
 package com.palo.editor.view;
 
+import java.util.stream.Collectors;
+
 import com.palo.editor.model.Item;
 import com.palo.editor.model.Translation;
 import com.palo.util.PreferencesSingleton;
@@ -12,6 +14,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.Stage;
 
@@ -22,6 +26,9 @@ public class MultipleItemDialogController {
 
 	@FXML
 	private TableColumn<Item, String> keyCol;
+	
+	@FXML
+	private TextArea keysArea;
 
 	@FXML
 	private TableView<Translation> translationsTable;
@@ -43,6 +50,9 @@ public class MultipleItemDialogController {
 
 	@FXML
 	private Button removeKeyButton;
+	
+	@FXML
+	private ToggleButton toggleButton;
 
 	private Stage dialogStage;
 
@@ -51,7 +61,7 @@ public class MultipleItemDialogController {
 	private boolean okClicked = false;
 
 	private boolean isNew = false;
-
+	
 	@FXML
 	private void initialize() {
 		keyCol.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().getKey()));
@@ -77,6 +87,7 @@ public class MultipleItemDialogController {
 		});
 		keysTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		removeKeyButton.setDisable(true);
+		
 	}
 
 	public void setItemsList(ObservableList<Item> selectedItemsList, boolean isNew) {
@@ -97,7 +108,11 @@ public class MultipleItemDialogController {
 
 	@FXML
 	public void handleAddKey() {
-		Item item = new Item("");
+		handleAddKey("");
+	}
+	
+	public void handleAddKey(String key) {
+		Item item = new Item(key);
 		PreferencesSingleton.getInstace().getTranslationsList().stream().forEach(s -> item.getValuesMap().put(s, ""));
 		keysTable.getItems().add(item);
 	}
@@ -114,6 +129,9 @@ public class MultipleItemDialogController {
 
 	@FXML
 	private void handleConfirmation() {
+		if (keysArea.isVisible()) {
+			splitTextAddNewKeys();
+		}
 		translationsTable.getItems().stream().forEach(t -> {
 			itemsList.stream().forEach(item -> {
 				item.getValuesMap().put(t.getLanguage(), t.getValue());
@@ -122,12 +140,37 @@ public class MultipleItemDialogController {
 		okClicked = true;
 		dialogStage.close();
 	}
-
+	
+	@FXML
+	private void toggle() {
+		if (keysTable.isVisible()) {
+			keysTable.setVisible(false);
+			keysArea.setVisible(true);
+			keysArea.setText(keysTable.getItems().stream().map(item -> item.getKey()).collect(Collectors.joining("\n")));
+			toggleButton.setText("TextArea");
+		} else {
+			keysTable.setVisible(true);
+			keysArea.setVisible(false);
+			toggleButton.setText("Table");
+			splitTextAddNewKeys();
+		}
+	}
+	
 	@FXML
 	private void handleCancel() {
 		dialogStage.close();
 	}
 
+	private void splitTextAddNewKeys() {
+		String[] keysArr = keysArea.getText().split("\n");
+		for (int i = 0; i < keysArr.length; i++) {
+			String key = keysArr[i].trim();
+			if (!itemsList.stream().anyMatch(item -> item.getKey().equals(key))) {
+				handleAddKey(key);
+			}
+		}
+	}
+	
 	public void setDialogStage(Stage dialogStage) {
 		this.dialogStage = dialogStage;
 	}

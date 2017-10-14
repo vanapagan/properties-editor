@@ -4,6 +4,8 @@
 <?import javafx.scene.control.ButtonBar?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.layout.AnchorPane?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="360.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.palo.editor.view.MultipleItemDialogController">
@@ -16,6 +18,7 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
          </columnResizePolicy>
       </TableView>
+      <TextArea fx:id="keysArea" layoutY="258.0" prefHeight="124.0" prefWidth="324.0" visible="false" AnchorPane.leftAnchor="18.0" AnchorPane.rightAnchor="18.0" AnchorPane.topAnchor="18.0" />
       <TableView fx:id="translationsTable" editable="true" layoutX="18.0" layoutY="181.0" prefHeight="150.0" prefWidth="264.0" AnchorPane.leftAnchor="18.0" AnchorPane.rightAnchor="18.0">
         <columns>
           <TableColumn fx:id="langCol" editable="false" prefWidth="103.0" text="Language" />
@@ -37,5 +40,6 @@
             <Button fx:id="removeKeyButton" mnemonicParsing="false" onAction="#handleRemoveKey" text="Remove" />
         </buttons>
       </ButtonBar>
+        <ToggleButton fx:id="toggleButton" layoutX="18.0" layoutY="149.0" maxWidth="-Infinity" minWidth="-Infinity" onAction="#toggle" prefWidth="63.0" text="TextArea" />
    </children>
 </AnchorPane>
