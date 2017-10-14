@@ -59,6 +59,7 @@ public class EditorController {
 			}
 			itemTable.getItems().get(e.getTablePosition().getRow()).setKey(value);
 			itemTable.refresh();
+			mainApp.addNewChange();
 		});
 		itemTable.getColumns().add(keyColumn);
 
@@ -66,8 +67,10 @@ public class EditorController {
 			TableColumn<Item, String> languageColumn = new TableColumn<Item, String>(filename);
 			languageColumn.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().fetchValue(filename)));
 			languageColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-			languageColumn.setOnEditCommit(e -> e.getTableView().getItems().get(e.getTablePosition().getRow())
-					.getValuesMap().put(e.getTableColumn().getText(), e.getNewValue()));
+			languageColumn.setOnEditCommit(e -> {
+				e.getTableView().getItems().get(e.getTablePosition().getRow()).getValuesMap().put(e.getTableColumn().getText(), e.getNewValue());
+				mainApp.addNewChange();
+			});
 			languageColumn.setId(filename);
 			itemTable.getColumns().add(languageColumn);
 		});
@@ -88,6 +91,7 @@ public class EditorController {
 		itemTable.setTableMenuButtonVisible(true);
 		
 		toggleModifying(true);
+
 	}
 
 	public void setMainApp(MainApp mainApp) {
@@ -122,6 +126,7 @@ public class EditorController {
 		if (okClicked) {
 			if (!mainApp.getItems().stream().anyMatch(existingItem -> existingItem.getKey().equals(item.getKey()))) {
 				mainApp.getItems().add(item);
+				mainApp.addNewChange();
 			}
 		}
 	}
@@ -141,6 +146,7 @@ public class EditorController {
 				if (!mainApp.getItems().stream()
 						.anyMatch(existingItem -> existingItem.getKey().equals(newItem.getKey()))) {
 					mainApp.getItems().add(newItem);
+					mainApp.addNewChange();
 				}
 			});
 		}
@@ -157,11 +163,13 @@ public class EditorController {
 			}
 		}
 		itemTable.refresh();
+		mainApp.addNewChange();
 	}
 
 	@FXML
 	private void handleDelete() {
 		mainApp.getItems().removeAll(itemTable.getSelectionModel().getSelectedItems());
+		mainApp.addNewChange();
 	}
 	
 	private void toggleModifying(boolean status) {
@@ -171,6 +179,7 @@ public class EditorController {
 	
 	public void removeLanguageColumn(String lang) {
 		itemTable.getColumns().remove(lang);
+		mainApp.addNewChange();
 	}
 
 }

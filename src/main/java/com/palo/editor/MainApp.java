@@ -47,12 +47,16 @@ public class MainApp extends Application {
 	private ObservableList<Item> items;
 	
 	private TableView<Item> itemTable;
+	
+	private int unsavedChanges;
 
 	@Override
 	public void start(Stage primaryStage) throws IOException {
 		this.primaryStage = primaryStage;
 		this.primaryStage.setTitle(Constants.APP_TITLE);
-
+		
+		initUnsavedChanges();
+	
 		checkForExistingPreferences();
 		items = FXCollections.observableArrayList(mapProperties().values());
 		initRootLayout();
@@ -210,6 +214,29 @@ public class MainApp extends Application {
 	
 	public TableView<Item> getItemTable() {
 		return itemTable;
+	}
+	
+	public void addNewChange() {
+		++unsavedChanges;
+		updateTitle();
+	}
+
+	public void resetUnsavedChanges() {
+		initUnsavedChanges();
+		updateTitle();
+	}
+	
+	public void initUnsavedChanges() {
+		this.unsavedChanges = 0;
+	}
+	
+	private void updateTitle() {
+		String title = unsavedChanges > 0 ? Constants.APP_TITLE + Constants.ASTERISK : Constants.APP_TITLE;
+		primaryStage.setTitle(title);
+	}
+
+	public int getUnsavedChanges() {
+		return unsavedChanges;
 	}
 
 	public static void main(String[] args) {

@@ -4,6 +4,7 @@ import java.util.stream.Collectors;
 
 import com.palo.editor.model.Item;
 import com.palo.editor.model.Translation;
+import com.palo.util.Constants;
 import com.palo.util.PreferencesSingleton;
 
 import javafx.beans.property.SimpleStringProperty;
@@ -162,7 +163,7 @@ public class MultipleItemDialogController {
 	}
 
 	private void migrateToTableView() {
-		String[] keysArr = keysArea.getText().split("\n");
+		String[] keysArr = keysArea.getText().split(Constants.NEW_LINE);
 		for (int i = 0; i < keysArr.length; i++) {
 			String key = keysArr[i].trim();
 			if (!key.isEmpty() && !itemsList.stream().anyMatch(item -> item.getKey().equals(key))) {

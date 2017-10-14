@@ -91,6 +91,7 @@ public class RootLayoutController {
 				fw = new FileWriter(Constants.PREFERENCES_FILE_LOCATION);
 				fw.write(jsonArr.toString());
 				fw.close();
+				mainApp.resetUnsavedChanges();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
