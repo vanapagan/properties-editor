@@ -84,12 +84,11 @@ public class MainApp extends Application {
 
 	public Map<String, Item> mapProperties() {
 		Map<String, Item> map = new HashMap<>();
-		PreferencesSingleton.getInstace().getFileHoldersInsertOrder().stream().forEach(name -> {
+		PreferencesSingleton.getInstace().getTranslationsList().stream().forEach(name -> {
 			FileHolder fileholder = PreferencesSingleton.getInstace().getFileHolder(name);
 			Path path = Paths.get(fileholder.getPath());
 			try (Stream<String> stream = Files.lines(path, StandardCharsets.UTF_8)) {
 				String translation = fileholder.getName();
-				PreferencesSingleton.getInstace().getTranslationsList().add(translation);
 				stream.forEach(line -> {
 					String[] lineContent = line.split(Constants.OPERATOR_EQUALS, 2);
 					String key = "";

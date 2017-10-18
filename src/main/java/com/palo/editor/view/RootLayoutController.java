@@ -62,7 +62,7 @@ public class RootLayoutController {
 					.collect(Collectors.joining(System.getProperty("line.separator")))
 					+ System.getProperty("line.separator");
 
-			String fhName = PreferencesSingleton.getInstace().getFileHoldersInsertOrder().stream()
+			String fhName = PreferencesSingleton.getInstace().getTranslationsList().stream()
 					.filter(fh -> s.equals(fh)).findAny().get();
 			FileHolder fileholder = PreferencesSingleton.getInstace().getFileHolder(fhName);
 			File file = new File(fileholder.getPath());

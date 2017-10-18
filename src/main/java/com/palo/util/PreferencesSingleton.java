@@ -17,9 +17,8 @@ import com.palo.editor.model.FileHolder;
 public class PreferencesSingleton {
 
 	private static PreferencesSingleton INSTANCE = new PreferencesSingleton();
-	private List<String> fileHoldersInsertOrder = new ArrayList<>();
-	private Map<String, FileHolder> fileHolders = new HashMap<>();
 	private List<String> translationsList = new ArrayList<>();
+	private Map<String, FileHolder> fileHolders = new HashMap<>();
 
 	private PreferencesSingleton() {
 	}
@@ -28,26 +27,18 @@ public class PreferencesSingleton {
 		return INSTANCE;
 	}
 
+	public FileHolder addFileHolder(FileHolder fileHolder) {
+		String name = fileHolder.getName();
+		translationsList.add(name);
+		return fileHolders.put(name, fileHolder);
+	}
+
 	public List<String> getTranslationsList() {
-		return translationsList;
+		return Collections.unmodifiableList(translationsList);
 	}
 
 	public void setTranslationsList(List<String> translationsList) {
 		this.translationsList = translationsList;
-	}
-
-	public FileHolder addFileHolder(FileHolder fileHolder) {
-		String name = fileHolder.getName();
-		fileHoldersInsertOrder.add(name);
-		return fileHolders.put(name, fileHolder);
-	}
-
-	public List<String> getFileHoldersInsertOrder() {
-		return Collections.unmodifiableList(fileHoldersInsertOrder);
-	}
-
-	public void setFileHoldersInsertOrder(List<String> fileHoldersInsertOrder) {
-		this.fileHoldersInsertOrder = fileHoldersInsertOrder;
 	}
 
 	public FileHolder getFileHolder(String key) {
@@ -57,7 +48,6 @@ public class PreferencesSingleton {
 	public void removeFile(String key) {
 		removeFileHolder(key);
 		setTranslationsList(translationsList.stream().filter(t -> !t.equals(key)).collect(Collectors.toList()));
-		setFileHoldersInsertOrder(fileHoldersInsertOrder.stream().filter(t -> !t.equals(key)).collect(Collectors.toList()));
 	}
 
 	private FileHolder removeFileHolder(String key) {
@@ -67,7 +57,6 @@ public class PreferencesSingleton {
 	public void truncateAll() {
 		fileHolders.clear();
 		translationsList.clear();
-		fileHoldersInsertOrder.clear();
 	}
 	
 	public void saveUserPreferences() throws IOException {
@@ -78,8 +67,8 @@ public class PreferencesSingleton {
 	
 	public static String getPreferencesJson() {
 		JSONArray jsonArr = new JSONArray();
-		PreferencesSingleton.getInstace().getFileHoldersInsertOrder().stream().forEach(name -> {
-			FileHolder fh = PreferencesSingleton.getInstace().getFileHolder(name);
+		PreferencesSingleton.getInstace().getTranslationsList().stream().forEach(lang -> {
+			FileHolder fh = PreferencesSingleton.getInstace().getFileHolder(lang);
 			JSONObject jsonObj = new JSONObject();
 			jsonObj.put(Constants.PREFERENCES_FILENAME, fh.getName());
 			jsonObj.put(Constants.PREFERENCES_PATH, fh.getPath());
