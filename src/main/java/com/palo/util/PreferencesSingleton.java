@@ -3,22 +3,18 @@ package com.palo.util;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.palo.editor.model.FileHolder;
+import com.palo.editor.model.TranslationFile;
 
 public class PreferencesSingleton {
 
 	private static PreferencesSingleton INSTANCE = new PreferencesSingleton();
-	private List<String> translationsList = new ArrayList<>();
-	private Map<String, FileHolder> fileHolders = new HashMap<>();
+	private List<TranslationFile> translationFiles = new ArrayList<>();
 
 	private PreferencesSingleton() {
 	}
@@ -27,51 +23,42 @@ public class PreferencesSingleton {
 		return INSTANCE;
 	}
 
-	public FileHolder addFileHolder(FileHolder fileHolder) {
-		String name = fileHolder.getName();
-		translationsList.add(name);
-		return fileHolders.put(name, fileHolder);
+	public boolean addFileHolder(TranslationFile translationFile) {
+		return translationFiles.add(translationFile);
 	}
 
-	public List<String> getTranslationsList() {
-		return Collections.unmodifiableList(translationsList);
+	public TranslationFile getTranslationFile(String name) {
+		return translationFiles.stream().filter(tf -> name.equals(tf)).findAny().get();
 	}
 
-	public void setTranslationsList(List<String> translationsList) {
-		this.translationsList = translationsList;
+	public List<TranslationFile> getTranslationFiles() {
+		return translationFiles;
 	}
 
-	public FileHolder getFileHolder(String key) {
-		return fileHolders.get(key);
+	public void setTranslationFiles(List<TranslationFile> translationFiles) {
+		this.translationFiles = translationFiles;
 	}
 
 	public void removeFile(String key) {
-		removeFileHolder(key);
-		setTranslationsList(translationsList.stream().filter(t -> !t.equals(key)).collect(Collectors.toList()));
-	}
-
-	private FileHolder removeFileHolder(String key) {
-		return fileHolders.remove(key);
+		setTranslationFiles(translationFiles.stream().filter(t -> !t.equals(key)).collect(Collectors.toList()));
 	}
 
 	public void truncateAll() {
-		fileHolders.clear();
-		translationsList.clear();
+		translationFiles.clear();
 	}
-	
+
 	public void saveUserPreferences() throws IOException {
 		FileWriter fw = new FileWriter(Constants.PREFERENCES_FILE_LOCATION);
 		fw.write(getPreferencesJson());
 		fw.close();
 	}
-	
+
 	public static String getPreferencesJson() {
 		JSONArray jsonArr = new JSONArray();
-		PreferencesSingleton.getInstace().getTranslationsList().stream().forEach(lang -> {
-			FileHolder fh = PreferencesSingleton.getInstace().getFileHolder(lang);
+		PreferencesSingleton.getInstace().getTranslationFiles().stream().forEach(tf -> {
 			JSONObject jsonObj = new JSONObject();
-			jsonObj.put(Constants.PREFERENCES_FILENAME, fh.getName());
-			jsonObj.put(Constants.PREFERENCES_PATH, fh.getPath());
+			jsonObj.put(Constants.PREFERENCES_FILENAME, tf.getName());
+			jsonObj.put(Constants.PREFERENCES_PATH, tf.getPath());
 			jsonArr.put(jsonObj);
 		});
 		return jsonArr.toString();

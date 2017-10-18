@@ -9,7 +9,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 
 import com.palo.editor.MainApp;
-import com.palo.editor.model.FileHolder;
 import com.palo.editor.model.Item;
 import com.palo.util.Constants;
 import com.palo.util.PreferencesSingleton;
@@ -56,16 +55,13 @@ public class RootLayoutController {
 
 	@FXML
 	private void handleSave() throws FileNotFoundException, IOException {
-		PreferencesSingleton.getInstace().getTranslationsList().stream().forEach(s -> {
-			String allLines = mainApp.getItems().parallelStream().sorted(Item::compareTo)
-					.map(item -> String.join(Constants.OPERATOR_EQUALS, item.getKey(), item.fetchValue(s).trim()))
+		PreferencesSingleton.getInstace().getTranslationFiles().stream().forEach(tf -> {
+			String allLines = mainApp.getItems().parallelStream().sorted(Item::compareTo).map(
+					item -> String.join(Constants.OPERATOR_EQUALS, item.getKey(), item.fetchValue(tf.getName()).trim()))
 					.collect(Collectors.joining(System.getProperty("line.separator")))
 					+ System.getProperty("line.separator");
 
-			String fhName = PreferencesSingleton.getInstace().getTranslationsList().stream()
-					.filter(fh -> s.equals(fh)).findAny().get();
-			FileHolder fileholder = PreferencesSingleton.getInstace().getFileHolder(fhName);
-			File file = new File(fileholder.getPath());
+			File file = new File(tf.getPath());
 
 			try (OutputStreamWriter output = new OutputStreamWriter(new FileOutputStream(file),
 					StandardCharsets.UTF_8)) {

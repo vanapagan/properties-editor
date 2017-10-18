@@ -66,8 +66,8 @@ public class RemoveLanguageDialogController {
 
 	public void setMainApp(MainApp mainApp) {
 		this.mainApp = mainApp;
-		PreferencesSingleton.getInstace().getTranslationsList().stream().forEach(lang -> {
-			languageCombo.getItems().add(lang);
+		PreferencesSingleton.getInstace().getTranslationFiles().stream().forEach(tf -> {
+			languageCombo.getItems().add(tf.getName());
 		});
 	}
 

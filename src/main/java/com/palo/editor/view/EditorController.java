@@ -63,7 +63,8 @@ public class EditorController {
 		});
 		itemTable.getColumns().add(keyColumn);
 
-		PreferencesSingleton.getInstace().getTranslationsList().stream().forEach(filename -> {
+		PreferencesSingleton.getInstace().getTranslationFiles().stream().forEach(tf -> {
+			String filename = tf.getName();
 			TableColumn<Item, String> languageColumn = new TableColumn<Item, String>(filename);
 			languageColumn.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().fetchValue(filename)));
 			languageColumn.setCellFactory(TextFieldTableCell.forTableColumn());
@@ -119,8 +120,8 @@ public class EditorController {
 	@FXML
 	private void handleAddNew() throws IOException {
 		Item item = new Item("");
-		PreferencesSingleton.getInstace().getTranslationsList().stream().forEach(lang -> {
-			item.getValuesMap().put(lang, "");
+		PreferencesSingleton.getInstace().getTranslationFiles().stream().forEach(tf -> {
+			item.getValuesMap().put(tf.getName(), "");
 		});
 		boolean okClicked = mainApp.showSingleItemDialog(item, Constants.EDITOR_ADD_NEW_TITLE);
 		if (okClicked) {
@@ -134,8 +135,8 @@ public class EditorController {
 	@FXML
 	private void handleAddMultipleNew() throws IOException {
 		Item item = new Item("");
-		PreferencesSingleton.getInstace().getTranslationsList().stream().forEach(lang -> {
-			item.getValuesMap().put(lang, "");
+		PreferencesSingleton.getInstace().getTranslationFiles().stream().forEach(tf -> {
+			item.getValuesMap().put(tf.getName(), "");
 		});
 
 		ObservableList<Item> newItemsList = FXCollections.observableArrayList();

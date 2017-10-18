@@ -17,7 +17,7 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 
-import com.palo.editor.model.FileHolder;
+import com.palo.editor.model.TranslationFile;
 import com.palo.editor.model.Item;
 import com.palo.editor.view.EditorController;
 import com.palo.editor.view.MultipleItemDialogController;
@@ -76,7 +76,7 @@ public class MainApp extends Application {
 				if (jsonObj != null) {
 					String filename = jsonObj.getString(Constants.PREFERENCES_FILENAME);
 					String path = jsonObj.getString(Constants.PREFERENCES_PATH);
-					PreferencesSingleton.getInstace().addFileHolder(new FileHolder(filename, path));
+					PreferencesSingleton.getInstace().addFileHolder(new TranslationFile(filename, path));
 				}
 			}
 		}
@@ -84,11 +84,10 @@ public class MainApp extends Application {
 
 	public Map<String, Item> mapProperties() {
 		Map<String, Item> map = new HashMap<>();
-		PreferencesSingleton.getInstace().getTranslationsList().stream().forEach(name -> {
-			FileHolder fileholder = PreferencesSingleton.getInstace().getFileHolder(name);
-			Path path = Paths.get(fileholder.getPath());
+		PreferencesSingleton.getInstace().getTranslationFiles().stream().forEach(tf -> {
+			Path path = Paths.get(tf.getPath());
 			try (Stream<String> stream = Files.lines(path, StandardCharsets.UTF_8)) {
-				String translation = fileholder.getName();
+				String translation = tf.getName();
 				stream.forEach(line -> {
 					String[] lineContent = line.split(Constants.OPERATOR_EQUALS, 2);
 					String key = "";

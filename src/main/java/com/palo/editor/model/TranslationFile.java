@@ -1,11 +1,11 @@
 package com.palo.editor.model;
 
-public class FileHolder {
+public class TranslationFile {
 	
 	private String name;
 	private String path;
 	
-	public FileHolder(String name, String path) {
+	public TranslationFile(String name, String path) {
 		this.name = name;
 		this.path = path;
 	}

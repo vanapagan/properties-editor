@@ -6,7 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import com.palo.editor.model.FileHolder;
+import com.palo.editor.model.TranslationFile;
 import com.palo.util.Constants;
 import com.palo.util.PreferencesSingleton;
 
@@ -86,7 +86,7 @@ public class OpenDialogController {
 	private void addNewFile(Path filepath) {
 		String name = filepath.getFileName().toString().replace(Constants.EXTENSION_PROPERTIES, "");
 		String pathLiteral = filepath.toString();
-		PreferencesSingleton.getInstace().addFileHolder(new FileHolder(name, pathLiteral));
+		PreferencesSingleton.getInstace().addFileHolder(new TranslationFile(name, pathLiteral));
 	}
 
 	public boolean isOkSelection() {

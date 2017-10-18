@@ -76,8 +76,8 @@ public class MultipleItemDialogController {
 		valueCol.setOnEditCommit(t -> t.getTableView().getItems().get(t.getTablePosition().getRow())
 				.setValue(t.getNewValue()));
 
-		PreferencesSingleton.getInstace().getTranslationsList()
-				.forEach(langName -> translationsTable.getItems().add(new Translation(langName, "")));
+		PreferencesSingleton.getInstace().getTranslationFiles()
+				.forEach(tf -> translationsTable.getItems().add(new Translation(tf.getName(), "")));
 
 		keysTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
 			removeKeyButton.setDisable(isNew && newSelection != null ? false : true);
@@ -97,8 +97,8 @@ public class MultipleItemDialogController {
 		}
 
 		ObservableList<Translation> translations = FXCollections.observableArrayList();
-		PreferencesSingleton.getInstace().getTranslationsList().stream()
-				.forEach(language -> translations.add(new Translation(language, "")));
+		PreferencesSingleton.getInstace().getTranslationFiles().stream()
+				.forEach(tf -> translations.add(new Translation(tf.getName(), "")));
 
 		keysTable.setItems(itemsList);
 		translationsTable.setItems(translations);
@@ -111,7 +111,7 @@ public class MultipleItemDialogController {
 	
 	public void handleAddKey(String key) {
 		Item item = new Item(key);
-		PreferencesSingleton.getInstace().getTranslationsList().stream().forEach(s -> item.getValuesMap().put(s, ""));
+		PreferencesSingleton.getInstace().getTranslationFiles().stream().forEach(tf -> item.getValuesMap().put(tf.getName(), ""));
 		keysTable.getItems().add(item);
 	}
 
