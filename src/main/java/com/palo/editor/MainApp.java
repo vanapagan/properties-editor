@@ -76,7 +76,7 @@ public class MainApp extends Application {
 				if (jsonObj != null) {
 					String filename = jsonObj.getString(Constants.PREFERENCES_FILENAME);
 					String path = jsonObj.getString(Constants.PREFERENCES_PATH);
-					PreferencesSingleton.getInstace().getFileHolders().add(new FileHolder(filename, path));
+					PreferencesSingleton.getInstace().addFileHolder(new FileHolder(filename, path));
 				}
 			}
 		}
@@ -84,7 +84,8 @@ public class MainApp extends Application {
 
 	public Map<String, Item> mapProperties() {
 		Map<String, Item> map = new HashMap<>();
-		PreferencesSingleton.getInstace().getFileHolders().stream().forEach(fileholder -> {
+		PreferencesSingleton.getInstace().getFileHoldersInsertOrder().stream().forEach(name -> {
+			FileHolder fileholder = PreferencesSingleton.getInstace().getFileHolder(name);
 			Path path = Paths.get(fileholder.getPath());
 			try (Stream<String> stream = Files.lines(path, StandardCharsets.UTF_8)) {
 				String translation = fileholder.getName();

@@ -1,15 +1,11 @@
 package com.palo.editor.view;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import com.palo.editor.model.FileHolder;
 import com.palo.util.Constants;
 import com.palo.util.PreferencesSingleton;
@@ -54,15 +50,11 @@ public class OpenDialogController {
 		if (selectedFilesList == null) {
 			pathLabel.setText(Constants.OPEN_DIALOG_NO_DIR_SELECTED);
 		} else {
-			// TODO empty current preferences
 			PreferencesSingleton.getInstace().truncateAll();
-			
 			selectedFilesList.stream().forEach(f -> addNewFileHolder(f));
 			pathLabel.setText(selectedFilesList.size() + " " + Constants.OPEN_DIALOG_FILES_SELECTED);
 			okSelection = true;
-
-			saveUserPreferences();
-
+			PreferencesSingleton.getInstace().saveUserPreferences();
 			dialogStage.close();
 		}
 
@@ -75,18 +67,14 @@ public class OpenDialogController {
 		if (selectedDirectory == null) {
 			pathLabel.setText(Constants.OPEN_DIALOG_NO_DIR_SELECTED);
 		} else {
-			
 			PreferencesSingleton.getInstace().truncateAll();
-
 			Path path = Paths.get(selectedDirectory.getAbsolutePath());
 			Files.list(path).filter(f -> f.toString().endsWith(Constants.EXTENSION_PROPERTIES)).forEach(filepath -> {
 				addNewFile(filepath);
 			});
 			pathLabel.setText(selectedDirectory.getAbsolutePath());
 			okSelection = true;
-
-			saveUserPreferences();
-
+			PreferencesSingleton.getInstace().saveUserPreferences();
 			dialogStage.close();
 		}
 	}
@@ -98,20 +86,7 @@ public class OpenDialogController {
 	private void addNewFile(Path filepath) {
 		String name = filepath.getFileName().toString().replace(Constants.EXTENSION_PROPERTIES, "");
 		String pathLiteral = filepath.toString();
-		PreferencesSingleton.getInstace().getFileHolders().add(new FileHolder(name, pathLiteral));
-	}
-
-	private void saveUserPreferences() throws IOException {
-		JSONArray jsonArr = new JSONArray();
-		PreferencesSingleton.getInstace().getFileHolders().stream().forEach(fh -> {
-			JSONObject jsonObj = new JSONObject();
-			jsonObj.put(Constants.PREFERENCES_FILENAME, fh.getName());
-			jsonObj.put(Constants.PREFERENCES_PATH, fh.getPath());
-			jsonArr.put(jsonObj);
-		});
-		FileWriter fw = new FileWriter(Constants.PREFERENCES_FILE_LOCATION);
-		fw.write(jsonArr.toString());
-		fw.close();
+		PreferencesSingleton.getInstace().addFileHolder(new FileHolder(name, pathLiteral));
 	}
 
 	public boolean isOkSelection() {

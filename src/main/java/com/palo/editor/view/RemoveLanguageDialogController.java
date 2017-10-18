@@ -1,7 +1,5 @@
 package com.palo.editor.view;
 
-import java.util.stream.Collectors;
-
 import com.palo.editor.MainApp;
 import com.palo.editor.model.Item;
 import com.palo.util.PreferencesSingleton;
@@ -56,10 +54,7 @@ public class RemoveLanguageDialogController {
 			mainApp.getItemTable().getColumns().remove(index.intValue());
 		}
 
-		PreferencesSingleton.getInstace().setFileHolders(PreferencesSingleton.getInstace().getFileHolders().stream()
-				.filter(fh -> !fh.getName().equals(selectedLanguage)).collect(Collectors.toList()));
-		PreferencesSingleton.getInstace().setTranslationsList(PreferencesSingleton.getInstace().getTranslationsList()
-				.stream().filter(t -> !t.equals(selectedLanguage)).collect(Collectors.toList()));
+		PreferencesSingleton.getInstace().removeFile(selectedLanguage);
 
 		dialogStage.close();
 	}

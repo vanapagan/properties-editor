@@ -3,14 +3,10 @@ package com.palo.editor.view;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import com.palo.editor.MainApp;
 import com.palo.editor.model.FileHolder;
@@ -31,13 +27,13 @@ public class RootLayoutController {
 
 	@FXML
 	private MenuItem openMenuItem;
-	
+
 	@FXML
 	private MenuItem addLanguageMenuItem;
-	
+
 	@FXML
 	private MenuItem removeLanguageMenuItem;
-	
+
 	@FXML
 	private MenuItem preferencesMenuItem;
 
@@ -51,58 +47,44 @@ public class RootLayoutController {
 
 	@FXML
 	private void handleOpenDialog() throws IOException {
-		mainApp.showOpenDialog();
-		mainApp.setItems(FXCollections.observableArrayList(mainApp.mapProperties().values()));
-		mainApp.showEditor();
+		boolean okClicked = mainApp.showOpenDialog();
+		if (okClicked) {
+			mainApp.setItems(FXCollections.observableArrayList(mainApp.mapProperties().values()));
+			mainApp.showEditor();
+		}
 	}
 
 	@FXML
 	private void handleSave() throws FileNotFoundException, IOException {
 		PreferencesSingleton.getInstace().getTranslationsList().stream().forEach(s -> {
-			StringBuilder sb = new StringBuilder();
-			mainApp.getItems().stream().sorted(Item::compareTo).forEach(item -> {
-				String line = String.join(Constants.OPERATOR_EQUALS, item.getKey(), item.fetchValue(s));
-				sb.append(line.trim());
-				sb.append(System.getProperty("line.separator"));
-			});
+			String allLines = mainApp.getItems().parallelStream().sorted(Item::compareTo)
+					.map(item -> String.join(Constants.OPERATOR_EQUALS, item.getKey(), item.fetchValue(s).trim()))
+					.collect(Collectors.joining(System.getProperty("line.separator")))
+					+ System.getProperty("line.separator");
 
-			FileHolder fileholder = PreferencesSingleton.getInstace().getFileHolders().stream()
-					.filter(fh -> s.equals(fh.getName())).collect(Collectors.toList()).get(0);
+			String fhName = PreferencesSingleton.getInstace().getFileHoldersInsertOrder().stream()
+					.filter(fh -> s.equals(fh)).findAny().get();
+			FileHolder fileholder = PreferencesSingleton.getInstace().getFileHolder(fhName);
 			File file = new File(fileholder.getPath());
 
 			try (OutputStreamWriter output = new OutputStreamWriter(new FileOutputStream(file),
 					StandardCharsets.UTF_8)) {
-				output.write(sb.toString());
+				output.write(allLines);
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			
-			JSONArray jsonArr = new JSONArray();
-			PreferencesSingleton.getInstace().getFileHolders().stream().forEach(fh -> {
-				JSONObject jsonObj = new JSONObject();
-				jsonObj.put(Constants.PREFERENCES_FILENAME, fh.getName());
-				jsonObj.put(Constants.PREFERENCES_PATH, fh.getPath());
-				jsonArr.put(jsonObj);
-			});
-			FileWriter fw;
-			try {
-				fw = new FileWriter(Constants.PREFERENCES_FILE_LOCATION);
-				fw.write(jsonArr.toString());
-				fw.close();
-				mainApp.resetUnsavedChanges();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 		});
+		PreferencesSingleton.getInstace().saveUserPreferences();
+		mainApp.resetUnsavedChanges();
 	}
-	
+
 	@FXML
 	private void handleAddLanguage() {
-		
+
 	}
-	
+
 	@FXML
 	private void handleRemoveLanguage() throws IOException {
 		FXMLLoader loader = new FXMLLoader();
@@ -121,15 +103,15 @@ public class RootLayoutController {
 
 		dialogStage.showAndWait();
 	}
-	
+
 	@FXML
 	private void handlePreferencesDialog() {
-		
+
 	}
-	
+
 	@FXML
 	private void handleAboutDialog() {
-		
+
 	}
 
 	public void setMainApp(MainApp mainApp) {
