@@ -11,11 +11,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-
 
 import com.palo.editor.model.TranslationFile;
 import com.palo.editor.model.Item;
@@ -26,7 +24,6 @@ import com.palo.editor.view.OpenDialogController;
 import com.palo.editor.view.RootLayoutController;
 import com.palo.util.Constants;
 import com.palo.util.PreferencesSingleton;
-
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -45,31 +42,42 @@ public class MainApp extends Application {
 	private BorderPane rootLayout;
 
 	private ObservableList<Item> items;
-	
+
 	private TableView<Item> itemTable;
-	
+
 	private int unsavedChanges;
 
 	@Override
-	public void start(Stage primaryStage) throws IOException {
-		this.primaryStage = primaryStage;
-		this.primaryStage.setTitle(Constants.APP_TITLE);
-		
+	public void start(Stage primaryStage) {
+		try {
+			this.primaryStage = primaryStage;
+			setupEnvironment();
+		} catch (IOException e) {
+			handleException(e);
+		} catch (Exception e) {
+			handleException(e);
+		}
+	}
+
+	private void setupEnvironment() throws IOException {
 		initUnsavedChanges();
-	
-		checkForExistingPreferences();
-		items = FXCollections.observableArrayList(mapProperties().values());
-		initRootLayout();
+		setTitle();
+		initPreferences();
+		initItems();
+		showRootLayout();
 		showEditor();
 	}
 
-	private void checkForExistingPreferences() throws IOException {
+	private void initItems() {
+		items = FXCollections.observableArrayList(mapProperties().values());
+	}
+
+	private void initPreferences() throws IOException {
 		File prefFile = new File(Constants.PREFERENCES_FILE_LOCATION);
 		if (!prefFile.exists()) {
 			showOpenDialog();
 		} else {
-			JSONTokener tokener;
-			tokener = new JSONTokener(new FileReader(Constants.PREFERENCES_FILE_LOCATION));
+			JSONTokener tokener = new JSONTokener(new FileReader(Constants.PREFERENCES_FILE_LOCATION));
 			JSONArray jsonArr = new JSONArray(tokener);
 			for (int i = 0; i < jsonArr.length(); i++) {
 				JSONObject jsonObj = (JSONObject) jsonArr.get(i);
@@ -90,14 +98,9 @@ public class MainApp extends Application {
 				String translation = tf.getName();
 				stream.forEach(line -> {
 					String[] lineContent = line.split(Constants.OPERATOR_EQUALS, 2);
-					String key = "";
-					String value = "";
-					if (lineContent.length > 0) {
-						key = lineContent[0].trim();
-					}
-					if (lineContent.length > 1) {
-						value = lineContent[1].trim();
-					}
+					int length = lineContent.length;
+					String key = length > 0 ? lineContent[0].trim() : "";
+					String value = length > 1 ? lineContent[1].trim() : "";
 					Item item = map.get(key);
 					if (item == null) {
 						item = new Item(key);
@@ -106,13 +109,13 @@ public class MainApp extends Application {
 					item.addNewValue(translation, value);
 				});
 			} catch (IOException e) {
-				e.printStackTrace();
+				handleException(e);
 			}
 		});
 		return map;
 	}
 
-	public void initRootLayout() throws IOException {
+	public void showRootLayout() throws IOException {
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(MainApp.class.getResource(Constants.VIEW_ROOT_LAYOUT));
 		rootLayout = loader.load();
@@ -132,8 +135,7 @@ public class MainApp extends Application {
 		controller.setMainApp(this);
 	}
 
-	public boolean showSingleItemDialog(Item item, String title)
-			throws IOException {
+	public boolean showSingleItemDialog(Item item, String title) throws IOException {
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(MainApp.class.getResource(Constants.VIEW_SINGLE_ITEM_DIALOG));
 		AnchorPane page = loader.load();
@@ -153,7 +155,7 @@ public class MainApp extends Application {
 
 		return controller.isOkClicked();
 	}
-	
+
 	public boolean showMultipleItemDialog(ObservableList<Item> selectedItemsList, String title, boolean isNew)
 			throws IOException {
 		FXMLLoader loader = new FXMLLoader();
@@ -206,36 +208,40 @@ public class MainApp extends Application {
 	public void setItems(ObservableList<Item> items) {
 		this.items = items;
 	}
-	
+
 	public void setItemTable(TableView<Item> itemTable) {
 		this.itemTable = itemTable;
 	}
-	
+
 	public TableView<Item> getItemTable() {
 		return itemTable;
 	}
-	
+
 	public void addNewChange() {
 		++unsavedChanges;
-		updateTitle();
+		setTitle();
 	}
 
 	public void resetUnsavedChanges() {
 		initUnsavedChanges();
-		updateTitle();
+		setTitle();
 	}
-	
+
 	public void initUnsavedChanges() {
 		this.unsavedChanges = 0;
 	}
-	
-	private void updateTitle() {
+
+	private void setTitle() {
 		String title = unsavedChanges > 0 ? Constants.APP_TITLE + Constants.ASTERISK : Constants.APP_TITLE;
 		primaryStage.setTitle(title);
 	}
 
 	public int getUnsavedChanges() {
 		return unsavedChanges;
+	}
+
+	private void handleException(Exception e) {
+		e.printStackTrace();
 	}
 
 	public static void main(String[] args) {
