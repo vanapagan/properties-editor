@@ -9,8 +9,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -47,15 +47,10 @@ public class MainApp extends Application {
 
 	private Stage primaryStage;
 	private BorderPane rootLayout;
-
 	private ObservableList<Item> items;
-
 	private TableView<Item> itemTable;
-
-	private int unsavedChanges;
-
+	private Stack<Action> unsavedChangesStack;
 	private StringProperty activityProperty;
-
 	private ObservableList<Action> actionsList;
 
 	@Override
@@ -72,14 +67,17 @@ public class MainApp extends Application {
 
 	private void setupEnvironment() throws IOException {
 		initUnsavedChanges();
-		List<Action> actions = new ArrayList<>();
-		actionsList = FXCollections.observableList(actions);
-		activityProperty = new SimpleStringProperty();
+		initActivityMonitoring();
 		setTitle();
 		initPreferences();
 		initItems();
 		showRootLayout();
 		showEditor();
+	}
+	
+	private void initActivityMonitoring() {
+		actionsList = FXCollections.observableList(new ArrayList<>());
+		activityProperty = new SimpleStringProperty();
 	}
 
 	private void initItems() {
@@ -233,32 +231,25 @@ public class MainApp extends Application {
 		return itemTable;
 	}
 
-	public void addNewChange() {
-		++unsavedChanges;
-		setTitle();
-	}
-
-	public void resetUnsavedChanges() {
-		initUnsavedChanges();
-		setTitle();
-	}
-
 	public void initUnsavedChanges() {
-		this.unsavedChanges = 0;
+		unsavedChangesStack = new Stack<>();
 	}
 
-	private void setTitle() {
-		String title = unsavedChanges > 0 ? Constants.APP_TITLE + Constants.ASTERISK : Constants.APP_TITLE;
-		primaryStage.setTitle(title);
-	}
-
-	public int getUnsavedChanges() {
-		return unsavedChanges;
+	public void truncateUnsavedChanges() {
+		unsavedChangesStack.clear();
+		setTitle();
 	}
 
 	public void addNewAction(Action a) {
-		actionsList.add(a);
 		setActivityPropertyText(a);
+		setTitle();
+		actionsList.add(a);
+		unsavedChangesStack.push(a);
+	}
+
+	private void setTitle() {
+		String title = unsavedChangesStack.size() > 0 ? Constants.APP_TITLE + Constants.ASTERISK : Constants.APP_TITLE;
+		primaryStage.setTitle(title);
 	}
 
 	public StringProperty getActivityProperty() {
@@ -267,10 +258,6 @@ public class MainApp extends Application {
 
 	public void setActivityPropertyText(Action a) {
 		activityProperty.set(a.getActivity().getGenericInfo());
-	}
-
-	public ObservableList<Action> getActionsList() {
-		return actionsList;
 	}
 
 	private void handleException(Exception e) {

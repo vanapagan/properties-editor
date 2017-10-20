@@ -72,7 +72,7 @@ public class RootLayoutController {
 			}
 		});
 		PreferencesSingleton.getInstace().saveUserPreferences();
-		mainApp.resetUnsavedChanges();
+		mainApp.truncateUnsavedChanges();
 	}
 
 	@FXML

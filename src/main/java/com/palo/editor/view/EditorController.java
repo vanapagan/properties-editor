@@ -48,8 +48,6 @@ public class EditorController {
 
 	private MainApp mainApp;
 
-	SortedList<Item> sortedData;
-
 	public EditorController() {
 	}
 
@@ -58,13 +56,13 @@ public class EditorController {
 		TableColumn<Item, String> keyColumn = new TableColumn<Item, String>("Key");
 		keyColumn.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().getKey()));
 		keyColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+		keyColumn.setSortType(TableColumn.SortType.ASCENDING);
 		keyColumn.setOnEditCommit(e -> {
 			String value = e.getOldValue();
 			if (!mainApp.getItems().stream().anyMatch(existingItem -> existingItem.getKey().equals(e.getNewValue()))) {
 				value = e.getNewValue();
-				mainApp.addNewAction(new Action(Type.EDIT_KEY, e.getOldValue() + " to " + value));
 				itemTable.getItems().get(e.getTablePosition().getRow()).setKey(value);
-				mainApp.addNewChange();
+				mainApp.addNewAction(new Action(Type.EDIT_KEY, e.getOldValue() + "' to '" + e.getNewValue()));
 			}
 			itemTable.refresh();
 		});
@@ -78,12 +76,12 @@ public class EditorController {
 			languageColumn.setOnEditCommit(e -> {
 				e.getTableView().getItems().get(e.getTablePosition().getRow()).getValuesMap().put(e.getTableColumn().getText(), e.getNewValue());
 				mainApp.addNewAction(new Action(Type.EDIT_VALUE, e.getTableView().getItems().get(e.getTablePosition().getRow()).getKey()));
-				mainApp.addNewChange();
 			});
 			languageColumn.setId(filename);
 			itemTable.getColumns().add(languageColumn);
 		});
 		
+		itemTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		itemTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
 			boolean status = true;
 			if (newSelection != null) {
@@ -91,16 +89,10 @@ public class EditorController {
 			}
 			toggleModifying(status);
 		});
-
-		itemTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-
-		keyColumn.setSortType(TableColumn.SortType.ASCENDING);
 		itemTable.getSortOrder().add(keyColumn);
-
 		itemTable.setTableMenuButtonVisible(true);
 		
 		toggleModifying(true);
-
 	}
 
 	public void setMainApp(MainApp mainApp) {
@@ -120,7 +112,7 @@ public class EditorController {
 			});
 		});
 		this.mainApp.setItemTable(itemTable);
-		sortedData = new SortedList<>(filteredData);
+		SortedList<Item> sortedData = new SortedList<>(filteredData);
 		sortedData.comparatorProperty().bind(itemTable.comparatorProperty());
 		itemTable.setItems(sortedData);
 		
@@ -138,7 +130,6 @@ public class EditorController {
 			if (!mainApp.getItems().stream().anyMatch(existingItem -> existingItem.getKey().equals(item.getKey()))) {
 				mainApp.getItems().add(item);
 				mainApp.addNewAction(new Action(Type.NEW_ITEM, item));
-				mainApp.addNewChange();
 			}
 		}
 	}
@@ -158,8 +149,6 @@ public class EditorController {
 				if (!mainApp.getItems().stream()
 						.anyMatch(existingItem -> existingItem.getKey().equals(newItem.getKey()))) {
 					mainApp.getItems().add(newItem);
-					mainApp.addNewAction(new Action(Type.NEW_ITEM, item));
-					mainApp.addNewChange();
 				}
 			});
 			mainApp.addNewAction(new Action(Type.NEW_ITEM, newItemsList));
@@ -179,24 +168,17 @@ public class EditorController {
 			}
 		}
 		itemTable.refresh();
-		mainApp.addNewChange();
 	}
 
 	@FXML
 	private void handleDelete() {
 		mainApp.addNewAction(new Action(Type.REMOVE_ITEM, itemTable.getSelectionModel().getSelectedItems()));
 		mainApp.getItems().removeAll(itemTable.getSelectionModel().getSelectedItems());
-		mainApp.addNewChange();
 	}
 	
 	private void toggleModifying(boolean status) {
 		editButton.setDisable(status);
 		deleteButton.setDisable(status);
-	}
-	
-	public void removeLanguageColumn(String lang) {
-		itemTable.getColumns().remove(lang);
-		mainApp.addNewChange();
 	}
 
 }
