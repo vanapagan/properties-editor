@@ -3,6 +3,8 @@ package com.palo.editor.view;
 import java.io.IOException;
 import com.palo.editor.MainApp;
 import com.palo.editor.model.Item;
+import com.palo.util.Action;
+import com.palo.util.Action.Type;
 import com.palo.util.Constants;
 import com.palo.util.PreferencesSingleton;
 
@@ -13,6 +15,7 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
@@ -39,6 +42,9 @@ public class EditorController {
 
 	@FXML
 	private TableView<Item> itemTable;
+	
+	@FXML
+	private Label activityLabel;
 
 	private MainApp mainApp;
 
@@ -56,10 +62,11 @@ public class EditorController {
 			String value = e.getOldValue();
 			if (!mainApp.getItems().stream().anyMatch(existingItem -> existingItem.getKey().equals(e.getNewValue()))) {
 				value = e.getNewValue();
+				mainApp.addNewAction(new Action(Type.EDIT_KEY, e.getOldValue() + " to " + value));
+				itemTable.getItems().get(e.getTablePosition().getRow()).setKey(value);
+				mainApp.addNewChange();
 			}
-			itemTable.getItems().get(e.getTablePosition().getRow()).setKey(value);
 			itemTable.refresh();
-			mainApp.addNewChange();
 		});
 		itemTable.getColumns().add(keyColumn);
 
@@ -70,12 +77,13 @@ public class EditorController {
 			languageColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 			languageColumn.setOnEditCommit(e -> {
 				e.getTableView().getItems().get(e.getTablePosition().getRow()).getValuesMap().put(e.getTableColumn().getText(), e.getNewValue());
+				mainApp.addNewAction(new Action(Type.EDIT_VALUE, e.getTableView().getItems().get(e.getTablePosition().getRow()).getKey()));
 				mainApp.addNewChange();
 			});
 			languageColumn.setId(filename);
 			itemTable.getColumns().add(languageColumn);
 		});
-
+		
 		itemTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
 			boolean status = true;
 			if (newSelection != null) {
@@ -111,10 +119,12 @@ public class EditorController {
 				return false;
 			});
 		});
-		mainApp.setItemTable(itemTable);
+		this.mainApp.setItemTable(itemTable);
 		sortedData = new SortedList<>(filteredData);
 		sortedData.comparatorProperty().bind(itemTable.comparatorProperty());
 		itemTable.setItems(sortedData);
+		
+		activityLabel.textProperty().bind(mainApp.getActivityProperty());
 	}
 
 	@FXML
@@ -127,6 +137,7 @@ public class EditorController {
 		if (okClicked) {
 			if (!mainApp.getItems().stream().anyMatch(existingItem -> existingItem.getKey().equals(item.getKey()))) {
 				mainApp.getItems().add(item);
+				mainApp.addNewAction(new Action(Type.NEW_ITEM, item));
 				mainApp.addNewChange();
 			}
 		}
@@ -147,9 +158,11 @@ public class EditorController {
 				if (!mainApp.getItems().stream()
 						.anyMatch(existingItem -> existingItem.getKey().equals(newItem.getKey()))) {
 					mainApp.getItems().add(newItem);
+					mainApp.addNewAction(new Action(Type.NEW_ITEM, item));
 					mainApp.addNewChange();
 				}
 			});
+			mainApp.addNewAction(new Action(Type.NEW_ITEM, newItemsList));
 		}
 	}
 
@@ -159,8 +172,10 @@ public class EditorController {
 		if (selectedItemsList != null && !selectedItemsList.isEmpty()) {
 			if (selectedItemsList.size() > 1) {
 				mainApp.showMultipleItemDialog(selectedItemsList, Constants.EDITOR_EDIT_TITLE_MULTIPLE, false);
+				mainApp.addNewAction(new Action(Type.EDIT_ITEM, selectedItemsList));
 			} else {
 				mainApp.showSingleItemDialog(selectedItemsList.get(0), Constants.EDITOR_EDIT_TITLE);
+				mainApp.addNewAction(new Action(Type.EDIT_ITEM, selectedItemsList.get(0)));
 			}
 		}
 		itemTable.refresh();
@@ -169,6 +184,7 @@ public class EditorController {
 
 	@FXML
 	private void handleDelete() {
+		mainApp.addNewAction(new Action(Type.REMOVE_ITEM, itemTable.getSelectionModel().getSelectedItems()));
 		mainApp.getItems().removeAll(itemTable.getSelectionModel().getSelectedItems());
 		mainApp.addNewChange();
 	}

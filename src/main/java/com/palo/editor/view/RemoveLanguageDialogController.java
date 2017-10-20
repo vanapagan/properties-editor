@@ -2,7 +2,9 @@ package com.palo.editor.view;
 
 import com.palo.editor.MainApp;
 import com.palo.editor.model.Item;
+import com.palo.util.Action;
 import com.palo.util.PreferencesSingleton;
+import com.palo.util.Action.Type;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -55,7 +57,7 @@ public class RemoveLanguageDialogController {
 		}
 
 		PreferencesSingleton.getInstace().removeFile(selectedLanguage);
-
+		mainApp.addNewAction(new Action(Type.REMOVE_LANGUAGE, selectedLanguage));
 		dialogStage.close();
 	}
 

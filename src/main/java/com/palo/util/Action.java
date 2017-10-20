@@ -1,18 +1,34 @@
 package com.palo.util;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.palo.editor.model.Item;
 import com.palo.util.Action.Type.Activity;
+
+import javafx.collections.ObservableList;
 
 public class Action {
 
 	private Type type;
 	private LocalDateTime dateTime;
 	private List<String> list;
+	
+	public Action(Type type, Item item) {
+		this(type, Arrays.asList(item.getKey()));
+	}
+	
+	public Action(Type type, String key) {
+		this(type, Arrays.asList(key));
+	}
+	
+	public Action(Type type, ObservableList<Item>  list) {
+		this(type, list.stream().map(item -> item.getKey()).collect(Collectors.toList()));
+	}
 
-	public Action(Type type, LocalDateTime dateTime, List<String> list) {
+	public Action(Type type, List<String> list) {
 		this.type = type;
 		this.dateTime = LocalDateTime.now();
 		this.list = list;
@@ -36,7 +52,7 @@ public class Action {
 
 			@Override
 			public Activity getActivity(List<String> list) {
-				return super.getActivity(list, "Added new", "item");
+				return super.getActivity(list, "Added", "new item");
 			}
 
 		},
@@ -46,6 +62,24 @@ public class Action {
 			@Override
 			public Activity getActivity(List<String> list) {
 				return super.getActivity(list, "Edited", "item");
+			}
+
+		},
+		
+		EDIT_KEY {
+
+			@Override
+			public Activity getActivity(List<String> list) {
+				return super.getActivity(list, "Edited", "key");
+			}
+
+		},
+		
+		EDIT_VALUE {
+
+			@Override
+			public Activity getActivity(List<String> list) {
+				return super.getActivity(list, "Edited value for", "key");
 			}
 
 		},
@@ -64,6 +98,15 @@ public class Action {
 			@Override
 			public Activity getActivity(List<String> list) {
 				return super.getActivity(list, "Loaded", "item");
+			}
+			
+		},
+		
+		LOAD_FILE {
+			
+			@Override
+			public Activity getActivity(List<String> list) {
+				return super.getActivity(list, "Loaded", "file");
 			}
 			
 		},
@@ -97,11 +140,11 @@ public class Action {
 		public String getGenericInformation(List<String> list, String action, String subject) {
 			int size = list.size();
 			return size > 1 ? String.join(" ", action, Integer.toString(size), getSubject(size, subject))
-					: String.join(" ", action, subject, list.get(0));
+					: String.join(" ", action, subject, "'" + list.get(0) + "'");
 		}
 
 		public List<String> getDetailedInfoList(List<String> list, String action, String subject) {
-			return list.stream().map(l -> String.join(" ", action, subject, l)).collect(Collectors.toList());
+			return list.stream().map(l -> String.join(" ", action, subject, "'" + l + "'")).collect(Collectors.toList());
 		}
 
 		private static String getSubject(int len, String subjectSingular) {

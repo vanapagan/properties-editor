@@ -7,8 +7,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.json.JSONArray;
@@ -22,10 +25,14 @@ import com.palo.editor.view.MultipleItemDialogController;
 import com.palo.editor.view.SingleItemDialogController;
 import com.palo.editor.view.OpenDialogController;
 import com.palo.editor.view.RootLayoutController;
+import com.palo.util.Action;
+import com.palo.util.Action.Type;
 import com.palo.util.Constants;
 import com.palo.util.PreferencesSingleton;
 
 import javafx.application.Application;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
@@ -47,6 +54,10 @@ public class MainApp extends Application {
 
 	private int unsavedChanges;
 
+	private StringProperty activityProperty;
+
+	private ObservableList<Action> actionsList;
+
 	@Override
 	public void start(Stage primaryStage) {
 		try {
@@ -61,6 +72,9 @@ public class MainApp extends Application {
 
 	private void setupEnvironment() throws IOException {
 		initUnsavedChanges();
+		List<Action> actions = new ArrayList<>();
+		actionsList = FXCollections.observableList(actions);
+		activityProperty = new SimpleStringProperty();
 		setTitle();
 		initPreferences();
 		initItems();
@@ -70,6 +84,8 @@ public class MainApp extends Application {
 
 	private void initItems() {
 		items = FXCollections.observableArrayList(mapProperties().values());
+		addNewAction(new Action(Type.LOAD_FILE, PreferencesSingleton.getInstace().getTranslationFiles()
+				.stream().map(f -> f.getName()).collect(Collectors.toList())));
 	}
 
 	private void initPreferences() throws IOException {
@@ -238,6 +254,23 @@ public class MainApp extends Application {
 
 	public int getUnsavedChanges() {
 		return unsavedChanges;
+	}
+
+	public void addNewAction(Action a) {
+		actionsList.add(a);
+		setActivityPropertyText(a);
+	}
+
+	public StringProperty getActivityProperty() {
+		return activityProperty;
+	}
+
+	public void setActivityPropertyText(Action a) {
+		activityProperty.set(a.getActivity().getGenericInfo());
+	}
+
+	public ObservableList<Action> getActionsList() {
+		return actionsList;
 	}
 
 	private void handleException(Exception e) {

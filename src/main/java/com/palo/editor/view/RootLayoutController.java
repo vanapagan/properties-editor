@@ -56,14 +56,13 @@ public class RootLayoutController {
 	@FXML
 	private void handleSave() throws FileNotFoundException, IOException {
 		PreferencesSingleton.getInstace().getTranslationFiles().stream().forEach(tf -> {
-			String allLines = mainApp.getItems().parallelStream().sorted(Item::compareTo).map(
-					item -> String.join(Constants.OPERATOR_EQUALS, item.getKey(), item.fetchValue(tf.getName()).trim()))
-					.collect(Collectors.joining(System.getProperty("line.separator")))
+			String allLines = mainApp.getItems().parallelStream().sorted(Item::compareTo)
+					.filter(item -> item != null && item.fetchValue(tf.getName()) != null).map(item -> {
+						return String.join(Constants.OPERATOR_EQUALS, item.getKey(),
+								item.fetchValue(tf.getName()).trim());
+					}).collect(Collectors.joining(System.getProperty("line.separator")))
 					+ System.getProperty("line.separator");
-
-			File file = new File(tf.getPath());
-
-			try (OutputStreamWriter output = new OutputStreamWriter(new FileOutputStream(file),
+			try (OutputStreamWriter output = new OutputStreamWriter(new FileOutputStream(new File(tf.getPath())),
 					StandardCharsets.UTF_8)) {
 				output.write(allLines);
 			} catch (FileNotFoundException e) {

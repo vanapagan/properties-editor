@@ -40,7 +40,7 @@ public class PreferencesSingleton {
 	}
 
 	public void removeFile(String key) {
-		setTranslationFiles(translationFiles.stream().filter(t -> !t.equals(key)).collect(Collectors.toList()));
+		setTranslationFiles(translationFiles.stream().filter(t -> !t.getName().equals(key)).collect(Collectors.toList()));
 	}
 
 	public void truncateAll() {
