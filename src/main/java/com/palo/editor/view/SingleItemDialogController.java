@@ -48,9 +48,6 @@ public class SingleItemDialogController {
 		valueCol.setCellFactory(TextFieldTableCell.forTableColumn());
 		valueCol.setOnEditCommit(t -> t.getTableView().getItems().get(t.getTablePosition().getRow())
 				.setValue(t.getNewValue()));
-		PreferencesSingleton.getInstace().getTranslationFiles().stream().forEach(tf -> {
-			translationsTable.getItems().add(new Translation(tf.getName(), ""));
-		});
 	}
 
 	public void setItem(Item item) {
@@ -58,7 +55,7 @@ public class SingleItemDialogController {
 		keyField.setText(item.getKey());
 		ObservableList<Translation> translations = FXCollections.observableArrayList();
 		PreferencesSingleton.getInstace().getTranslationFiles().stream().forEach(tf -> {
-			String value = item.getValuesMap().get(tf);
+			String value = this.item.getValuesMap().get(tf.getName());
 			translations.add(new Translation(tf.getName(), value));
 		});
 		translationsTable.setItems(translations);

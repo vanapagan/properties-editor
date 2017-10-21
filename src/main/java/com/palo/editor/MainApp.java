@@ -82,7 +82,7 @@ public class MainApp extends Application {
 
 	private void initItems() {
 		items = FXCollections.observableArrayList(mapProperties().values());
-		addNewAction(new Action(Type.LOAD_FILE, PreferencesSingleton.getInstace().getTranslationFiles()
+		addNewIdempotentAction(new Action(Type.LOAD_FILE, PreferencesSingleton.getInstace().getTranslationFiles()
 				.stream().map(f -> f.getName()).collect(Collectors.toList())));
 	}
 
@@ -241,10 +241,14 @@ public class MainApp extends Application {
 	}
 
 	public void addNewAction(Action a) {
+		unsavedChangesStack.push(a);
+		addNewIdempotentAction(a);
+	}
+	
+	public void addNewIdempotentAction(Action a) {
+		actionsList.add(a);
 		setActivityPropertyText(a);
 		setTitle();
-		actionsList.add(a);
-		unsavedChangesStack.push(a);
 	}
 
 	private void setTitle() {

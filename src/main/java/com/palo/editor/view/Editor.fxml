@@ -37,7 +37,7 @@
                         <Button fx:id="deleteButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleDelete" prefHeight="24.0" prefWidth="73.0" text="Delete" />
                      </buttons>
                   </ButtonBar>
-                  <Label fx:id="activityLabel" alignment="CENTER_RIGHT" layoutX="268.0" layoutY="7.0" prefHeight="18.0" prefWidth="400.0" textAlignment="RIGHT" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="180.0" AnchorPane.topAnchor="7.0" />
+                  <Label fx:id="activityLabel" alignment="CENTER_RIGHT" layoutX="268.0" layoutY="7.0" prefHeight="18.0" prefWidth="400.0" textAlignment="RIGHT" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="180.0" AnchorPane.topAnchor="7.0" />
                </children>
             </AnchorPane>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="320.0" prefWidth="598.0">

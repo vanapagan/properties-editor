@@ -70,7 +70,7 @@ public class Action {
 
 			@Override
 			public Activity getActivity(List<String> list) {
-				return super.getActivity(list, "Edited", "key");
+				return super.getActivity(list, "Changed", "key");
 			}
 
 		},

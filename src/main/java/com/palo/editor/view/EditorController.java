@@ -58,11 +58,11 @@ public class EditorController {
 		keyColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 		keyColumn.setSortType(TableColumn.SortType.ASCENDING);
 		keyColumn.setOnEditCommit(e -> {
-			String value = e.getOldValue();
-			if (!mainApp.getItems().stream().anyMatch(existingItem -> existingItem.getKey().equals(e.getNewValue()))) {
-				value = e.getNewValue();
-				itemTable.getItems().get(e.getTablePosition().getRow()).setKey(value);
-				mainApp.addNewAction(new Action(Type.EDIT_KEY, e.getOldValue() + "' to '" + e.getNewValue()));
+			String oldValue = e.getOldValue();
+			String newValue = e.getNewValue();
+			if (newValue != null && !newValue.isEmpty() && mainApp.getItems().stream().noneMatch(existingItem -> existingItem.getKey().equals(newValue))) {
+				itemTable.getItems().get(e.getTablePosition().getRow()).setKey(newValue);
+				mainApp.addNewAction(new Action(Type.EDIT_KEY, oldValue + "' to '" + newValue));
 			}
 			itemTable.refresh();
 		});
