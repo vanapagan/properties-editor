@@ -10,8 +10,11 @@ import java.util.stream.Collectors;
 
 import com.palo.editor.MainApp;
 import com.palo.editor.model.Item;
+import com.palo.editor.model.TranslationFile;
+import com.palo.util.Action;
 import com.palo.util.Constants;
 import com.palo.util.PreferencesSingleton;
+import com.palo.util.Action.Type;
 
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -72,6 +75,7 @@ public class RootLayoutController {
 			}
 		});
 		PreferencesSingleton.getInstace().saveUserPreferences();
+		mainApp.addNewAction(new Action(Type.SAVE, PreferencesSingleton.getInstace().getTranslationFiles().stream().map(TranslationFile::getName).collect(Collectors.toList())));
 		mainApp.truncateUnsavedChanges();
 	}
 

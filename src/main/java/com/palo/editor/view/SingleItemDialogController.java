@@ -70,6 +70,7 @@ public class SingleItemDialogController {
 		item.setKey(keyField.getText());
 		translationsTable.getItems().stream().forEach(t -> {
 			item.getValuesMap().put(t.getLanguage(), t.getValue());
+			item.updateLastModifiedTimestamp();
 		});
 		okClicked = true;
 		dialogStage.close();

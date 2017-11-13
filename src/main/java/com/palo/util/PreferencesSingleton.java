@@ -2,6 +2,8 @@ package com.palo.util;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,6 +16,7 @@ import com.palo.editor.model.TranslationFile;
 public class PreferencesSingleton {
 
 	private static PreferencesSingleton INSTANCE = new PreferencesSingleton();
+	private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss dd-MM-yyyy");
 	private List<TranslationFile> translationFiles = new ArrayList<>();
 
 	private PreferencesSingleton() {
@@ -62,6 +65,10 @@ public class PreferencesSingleton {
 			jsonArr.put(jsonObj);
 		});
 		return jsonArr.toString();
+	}
+	
+	public static String localDateTimeToString(LocalDateTime ldt) {
+		return ldt.format(formatter);
 	}
 
 }

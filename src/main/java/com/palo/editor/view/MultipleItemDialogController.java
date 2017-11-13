@@ -132,6 +132,7 @@ public class MultipleItemDialogController {
 		translationsTable.getItems().stream().forEach(t -> {
 			itemsList.stream().forEach(item -> {
 				item.getValuesMap().put(t.getLanguage(), t.getValue());
+				item.updateLastModifiedTimestamp();
 			});
 		});
 		okClicked = true;

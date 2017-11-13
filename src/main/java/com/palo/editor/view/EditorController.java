@@ -3,6 +3,7 @@ package com.palo.editor.view;
 import java.io.IOException;
 import com.palo.editor.MainApp;
 import com.palo.editor.model.Item;
+import com.palo.editor.model.TranslationFile;
 import com.palo.util.Action;
 import com.palo.util.Action.Type;
 import com.palo.util.Constants;
@@ -53,6 +54,8 @@ public class EditorController {
 
 	@FXML
 	private void initialize() {
+		ObservableList<TableColumn<Item, ?>> columns = itemTable.getColumns();
+		
 		TableColumn<Item, String> keyColumn = new TableColumn<Item, String>("Key");
 		keyColumn.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().getKey()));
 		keyColumn.setCellFactory(TextFieldTableCell.forTableColumn());
@@ -61,25 +64,42 @@ public class EditorController {
 			String oldValue = e.getOldValue();
 			String newValue = e.getNewValue();
 			if (newValue != null && !newValue.isEmpty() && mainApp.getItems().stream().noneMatch(existingItem -> existingItem.getKey().equals(newValue))) {
-				itemTable.getItems().get(e.getTablePosition().getRow()).setKey(newValue);
+				Item item = itemTable.getItems().get(e.getTablePosition().getRow());
+				item.setKey(newValue);
+				item.updateLastModifiedTimestamp();
 				mainApp.addNewAction(new Action(Type.EDIT_KEY, oldValue + "' to '" + newValue));
 			}
 			itemTable.refresh();
 		});
-		itemTable.getColumns().add(keyColumn);
+		columns.add(keyColumn);
 
-		PreferencesSingleton.getInstace().getTranslationFiles().stream().forEach(tf -> {
-			String filename = tf.getName();
-			TableColumn<Item, String> languageColumn = new TableColumn<Item, String>(filename);
-			languageColumn.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().fetchValue(filename)));
+		PreferencesSingleton.getInstace().getTranslationFiles().stream().map(TranslationFile::getName).forEach(fn -> {
+			TableColumn<Item, String> languageColumn = new TableColumn<Item, String>(fn);
+			languageColumn.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().fetchValue(fn)));
 			languageColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 			languageColumn.setOnEditCommit(e -> {
-				e.getTableView().getItems().get(e.getTablePosition().getRow()).getValuesMap().put(e.getTableColumn().getText(), e.getNewValue());
-				mainApp.addNewAction(new Action(Type.EDIT_VALUE, e.getTableView().getItems().get(e.getTablePosition().getRow()).getKey()));
+				Item item = e.getTableView().getItems().get(e.getTablePosition().getRow());
+				item.getValuesMap().put(e.getTableColumn().getText(), e.getNewValue());
+				item.updateLastModifiedTimestamp();
+				mainApp.addNewAction(new Action(Type.EDIT_VALUE, item.getKey()));
+				itemTable.refresh();
 			});
-			languageColumn.setId(filename);
+			languageColumn.setId(fn);
 			itemTable.getColumns().add(languageColumn);
 		});
+		
+		if (!columns.isEmpty()) {
+			TableColumn<Item, String> createdColumn = new TableColumn<Item, String>("Created");
+			createdColumn.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().getCreatedTimestamp()));
+			createdColumn.setVisible(false);
+			
+			TableColumn<Item, String> modifiedColumn = new TableColumn<Item, String>("Last Modified");
+			modifiedColumn.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().getModifiedTimestamp()));
+			modifiedColumn.setVisible(false);
+			
+			columns.add(createdColumn);
+			columns.add(modifiedColumn);
+		}
 		
 		itemTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		itemTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
