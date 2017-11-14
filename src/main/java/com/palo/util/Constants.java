@@ -39,6 +39,7 @@ public class Constants {
 	
 	public static final String OPERATOR_EQUALS = "=";
 	public static final String NEW_LINE = "\n";
+	public static final String INTENT = "\t";
 	public static final String ASTERISK = "*";
 	public static final String LINE_SEPARATOR = "line.separator";
 	

@@ -49,7 +49,7 @@ public class Action {
 	@Override
 	public String toString() {
 		String time = PreferencesSingleton.localDateTimeToString(dateTime);
-		return type.getActivity(list).getDetailedInfoList().stream().map(d -> time + "\t" + d).collect(Collectors.joining("\n"));
+		return type.getActivity(list).getDetailedInfoList().stream().map(d -> time + Constants.INTENT + d).collect(Collectors.joining(Constants.NEW_LINE));
 	}
 
 
