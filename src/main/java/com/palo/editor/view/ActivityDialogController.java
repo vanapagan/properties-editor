@@ -4,6 +4,7 @@ import java.util.stream.Collectors;
 
 import com.palo.editor.MainApp;
 import com.palo.util.Action;
+import com.palo.util.Constants;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -36,7 +37,7 @@ public class ActivityDialogController {
 	}
 
 	public void setMainApp(MainApp mainApp) {
-		String activityLog = mainApp.getActionsList().stream().map(Action::toString).collect(Collectors.joining("\n"));
+		String activityLog = mainApp.getActionsList().stream().map(Action::toString).collect(Collectors.joining(Constants.NEW_LINE));
 		textArea.appendText(activityLog);
 	}
 	

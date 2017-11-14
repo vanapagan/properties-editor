@@ -2,7 +2,10 @@ package com.palo.util;
 
 public class Constants {
 	
-	public static final String APP_TITLE = "Properties Editor";
+	public static final String TITLE_APP = "Properties Editor";
+	public static final String TITLE_OPEN = "Open files";
+	public static final String TITLE_ACTIVITY = "Latest activity";
+	
 	public static final String PREFERENCES_FILENAME = "filename";
 	public static final String PREFERENCES_PATH = "path";
 	
@@ -12,6 +15,7 @@ public class Constants {
 	public static final String VIEW_MULTIPLE_ITEM_DIALOG = "view/MultipleItemDialog.fxml";
 	public static final String VIEW_OPEN_DIALOG = "view/OpenDialog.fxml";
 	public static final String VIEW_ACTIVITY_DIALOG = "view/ActivityDialog.fxml";
+	public static final String VIEW_REMOVE_LANGUAGE_DIALOG = "view/RemoveLanguageDialog.fxml";
 	
 	public static final String PREFERENCES_FILE_LOCATION = "C:\\temp\\preferences.json";
 	
@@ -27,13 +31,16 @@ public class Constants {
 	public static final String OPEN_DIALOG_NO_DIR_SELECTED = "No directory selected";
 	public static final String OPEN_DIALOG_FILES_SELECTED = "files selected";
 	
+	public static final String LABEL_KEY = "Key";
+	public static final String LABEL_CREATED = "Created";
+	public static final String LABEL_LAST_MODIFIED = "Last Modified";
+	
 	public static final String EXTENSION_PROPERTIES = ".properties";
 	
 	public static final String OPERATOR_EQUALS = "=";
-	
 	public static final String NEW_LINE = "\n";
-	
 	public static final String ASTERISK = "*";
+	public static final String LINE_SEPARATOR = "line.separator";
 	
 	private Constants() {
 	}

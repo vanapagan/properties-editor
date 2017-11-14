@@ -56,7 +56,7 @@ public class EditorController {
 	private void initialize() {
 		ObservableList<TableColumn<Item, ?>> columns = itemTable.getColumns();
 		
-		TableColumn<Item, String> keyColumn = new TableColumn<Item, String>("Key");
+		TableColumn<Item, String> keyColumn = new TableColumn<Item, String>(Constants.LABEL_KEY);
 		keyColumn.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().getKey()));
 		keyColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 		keyColumn.setSortType(TableColumn.SortType.ASCENDING);
@@ -89,11 +89,11 @@ public class EditorController {
 		});
 		
 		if (!columns.isEmpty()) {
-			TableColumn<Item, String> createdColumn = new TableColumn<Item, String>("Created");
+			TableColumn<Item, String> createdColumn = new TableColumn<Item, String>(Constants.LABEL_CREATED);
 			createdColumn.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().getCreatedTimestamp()));
 			createdColumn.setVisible(false);
 			
-			TableColumn<Item, String> modifiedColumn = new TableColumn<Item, String>("Last Modified");
+			TableColumn<Item, String> modifiedColumn = new TableColumn<Item, String>(Constants.LABEL_LAST_MODIFIED);
 			modifiedColumn.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().getModifiedTimestamp()));
 			modifiedColumn.setVisible(false);
 			

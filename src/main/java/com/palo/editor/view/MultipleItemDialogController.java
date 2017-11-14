@@ -144,7 +144,7 @@ public class MultipleItemDialogController {
 		boolean state = keysTable.isVisible();
 		switchBetween(!state, state);
 		if (state) {
-			keysArea.setText(keysTable.getItems().stream().map(item -> item.getKey()).collect(Collectors.joining("\n")));
+			keysArea.setText(keysTable.getItems().stream().map(item -> item.getKey()).collect(Collectors.joining(Constants.NEW_LINE)));
 			toggleButton.setText("TextArea");
 		} else {
 			toggleButton.setText("Table");

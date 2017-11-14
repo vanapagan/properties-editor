@@ -199,6 +199,7 @@ public class MainApp extends Application {
 		AnchorPane page = loader.load();
 
 		Stage dialogStage = new Stage();
+		dialogStage.setTitle(Constants.TITLE_OPEN);
 		dialogStage.initModality(Modality.WINDOW_MODAL);
 		dialogStage.initOwner(primaryStage);
 		Scene scene = new Scene(page);
@@ -218,6 +219,7 @@ public class MainApp extends Application {
 		AnchorPane page = loader.load();
 
 		Stage dialogStage = new Stage();
+		dialogStage.setTitle(Constants.TITLE_ACTIVITY);
 		dialogStage.initModality(Modality.WINDOW_MODAL);
 		dialogStage.initOwner(primaryStage);
 		Scene scene = new Scene(page);
@@ -273,8 +275,12 @@ public class MainApp extends Application {
 	}
 
 	private void setTitle() {
-		String title = unsavedChangesStack.size() > 0 ? Constants.APP_TITLE + Constants.ASTERISK : Constants.APP_TITLE;
+		String title = anyUnsavedChanges() ? Constants.TITLE_APP + Constants.ASTERISK : Constants.TITLE_APP;
 		primaryStage.setTitle(title);
+	}
+	
+	public boolean anyUnsavedChanges() {
+		return !unsavedChangesStack.isEmpty();
 	}
 
 	public StringProperty getActivityProperty() {
@@ -289,7 +295,7 @@ public class MainApp extends Application {
 		activityProperty.set(a.getActivity().getGenericInfo());
 	}
 
-	private void handleException(Exception e) {
+	public void handleException(Exception e) {
 		e.printStackTrace();
 	}
 

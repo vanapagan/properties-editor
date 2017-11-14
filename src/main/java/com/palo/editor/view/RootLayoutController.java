@@ -58,25 +58,28 @@ public class RootLayoutController {
 
 	@FXML
 	private void handleSave() throws FileNotFoundException, IOException {
-		PreferencesSingleton.getInstace().getTranslationFiles().stream().forEach(tf -> {
-			String allLines = mainApp.getItems().parallelStream().sorted(Item::compareTo)
-					.filter(item -> item != null && item.fetchValue(tf.getName()) != null).map(item -> {
-						return String.join(Constants.OPERATOR_EQUALS, item.getKey(),
-								item.fetchValue(tf.getName()).trim());
-					}).collect(Collectors.joining(System.getProperty("line.separator")))
-					+ System.getProperty("line.separator");
-			try (OutputStreamWriter output = new OutputStreamWriter(new FileOutputStream(new File(tf.getPath())),
-					StandardCharsets.UTF_8)) {
-				output.write(allLines);
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		});
-		PreferencesSingleton.getInstace().saveUserPreferences();
-		mainApp.addNewAction(new Action(Type.SAVE, PreferencesSingleton.getInstace().getTranslationFiles().stream().map(TranslationFile::getName).collect(Collectors.toList())));
-		mainApp.truncateUnsavedChanges();
+		if (mainApp.anyUnsavedChanges()) {
+			PreferencesSingleton.getInstace().getTranslationFiles().stream().forEach(tf -> {
+				String allLines = mainApp.getItems().parallelStream().sorted(Item::compareTo)
+						.filter(item -> item != null && item.fetchValue(tf.getName()) != null).map(item -> {
+							return String.join(Constants.OPERATOR_EQUALS, item.getKey(),
+									item.fetchValue(tf.getName()).trim());
+						}).collect(Collectors.joining(System.getProperty(Constants.LINE_SEPARATOR)))
+						+ System.getProperty(Constants.LINE_SEPARATOR);
+				try (OutputStreamWriter output = new OutputStreamWriter(new FileOutputStream(new File(tf.getPath())),
+						StandardCharsets.UTF_8)) {
+					output.write(allLines);
+				} catch (FileNotFoundException e) {
+					mainApp.handleException(e);
+				} catch (IOException e) {
+					mainApp.handleException(e);
+				}
+			});
+			PreferencesSingleton.getInstace().saveUserPreferences();
+			mainApp.addNewAction(new Action(Type.SAVE, PreferencesSingleton.getInstace().getTranslationFiles().stream()
+					.map(TranslationFile::getName).collect(Collectors.toList())));
+			mainApp.truncateUnsavedChanges();
+		}
 	}
 
 	@FXML
@@ -87,7 +90,7 @@ public class RootLayoutController {
 	@FXML
 	private void handleRemoveLanguage() throws IOException {
 		FXMLLoader loader = new FXMLLoader();
-		loader.setLocation(MainApp.class.getResource("view/RemoveLanguageDialog.fxml"));
+		loader.setLocation(MainApp.class.getResource(Constants.VIEW_REMOVE_LANGUAGE_DIALOG));
 		AnchorPane page = loader.load();
 
 		Stage dialogStage = new Stage();
