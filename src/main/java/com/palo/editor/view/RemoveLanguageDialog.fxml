@@ -27,7 +27,7 @@
       <ButtonBar layoutX="186.0" layoutY="77.0" prefHeight="24.0" prefWidth="200.0" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="20.0">
         <buttons>
           <Button fx:id="confirmationButton" mnemonicParsing="false" onAction="#handleConfirmation" text="OK" />
-            <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#handleCancel" text="Cancel" />
+            <Button fx:id="cancelButton" cancelButton="true" mnemonicParsing="false" onAction="#handleCancel" text="Cancel" />
         </buttons>
       </ButtonBar>
    </children>

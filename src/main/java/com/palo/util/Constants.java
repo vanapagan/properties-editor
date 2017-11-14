@@ -11,6 +11,7 @@ public class Constants {
 	public static final String VIEW_SINGLE_ITEM_DIALOG = "view/SingleItemDialog.fxml";
 	public static final String VIEW_MULTIPLE_ITEM_DIALOG = "view/MultipleItemDialog.fxml";
 	public static final String VIEW_OPEN_DIALOG = "view/OpenDialog.fxml";
+	public static final String VIEW_ACTIVITY_DIALOG = "view/ActivityDialog.fxml";
 	
 	public static final String PREFERENCES_FILE_LOCATION = "C:\\temp\\preferences.json";
 	

@@ -46,6 +46,14 @@ public class Action {
 		return dateTime;
 	}
 
+	@Override
+	public String toString() {
+		String time = PreferencesSingleton.localDateTimeToString(dateTime);
+		return type.getActivity(list).getDetailedInfoList().stream().map(d -> time + "\t" + d).collect(Collectors.joining("\n"));
+	}
+
+
+
 	public enum Type {
 
 		NEW_ITEM {

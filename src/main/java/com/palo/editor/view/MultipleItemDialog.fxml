@@ -31,7 +31,7 @@
       <ButtonBar layoutX="82.0" layoutY="323.0" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="24.0" prefWidth="200.0" AnchorPane.bottomAnchor="18.0" AnchorPane.rightAnchor="18.0">
         <buttons>
           <Button fx:id="confirmButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleConfirmation" prefHeight="24.0" prefWidth="75.0" text="OK" />
-            <Button fx:id="cancelButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleCancel" prefHeight="24.0" prefWidth="75.0" text="Cancel" />
+            <Button fx:id="cancelButton" cancelButton="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleCancel" prefHeight="24.0" prefWidth="75.0" text="Cancel" />
         </buttons>
       </ButtonBar>
       <ButtonBar layoutX="142.0" layoutY="149.0" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="24.0" prefWidth="200.0" AnchorPane.rightAnchor="18.0">

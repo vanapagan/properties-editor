@@ -189,6 +189,11 @@ public class EditorController {
 		}
 		itemTable.refresh();
 	}
+	
+	@FXML
+	private void handleActivity() throws IOException {
+		mainApp.showActivityDialog();
+	}
 
 	@FXML
 	private void handleDelete() {

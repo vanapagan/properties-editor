@@ -20,6 +20,7 @@ import org.json.JSONTokener;
 
 import com.palo.editor.model.TranslationFile;
 import com.palo.editor.model.Item;
+import com.palo.editor.view.ActivityDialogController;
 import com.palo.editor.view.EditorController;
 import com.palo.editor.view.MultipleItemDialogController;
 import com.palo.editor.view.SingleItemDialogController;
@@ -210,6 +211,26 @@ public class MainApp extends Application {
 
 		return controller.isOkSelection();
 	}
+	
+	public boolean showActivityDialog() throws IOException {
+		FXMLLoader loader = new FXMLLoader();
+		loader.setLocation(MainApp.class.getResource(Constants.VIEW_ACTIVITY_DIALOG));
+		AnchorPane page = loader.load();
+
+		Stage dialogStage = new Stage();
+		dialogStage.initModality(Modality.WINDOW_MODAL);
+		dialogStage.initOwner(primaryStage);
+		Scene scene = new Scene(page);
+		dialogStage.setScene(scene);
+
+		ActivityDialogController controller = loader.getController();
+		controller.setDialogStage(dialogStage);
+		controller.setMainApp(this);
+
+		dialogStage.showAndWait();
+
+		return controller.isOkSelection();
+	}
 
 	public Stage getPrimaryStage() {
 		return primaryStage;
@@ -258,6 +279,10 @@ public class MainApp extends Application {
 
 	public StringProperty getActivityProperty() {
 		return activityProperty;
+	}
+
+	public ObservableList<Action> getActionsList() {
+		return actionsList;
 	}
 
 	public void setActivityPropertyText(Action a) {
