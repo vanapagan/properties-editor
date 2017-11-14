@@ -61,10 +61,10 @@ public class RootLayoutController {
 		if (mainApp.anyUnsavedChanges()) {
 			PreferencesSingleton.getInstace().getTranslationFiles().stream().forEach(tf -> {
 				String allLines = mainApp.getItems().parallelStream().sorted(Item::compareTo)
-						.filter(item -> item != null && item.fetchValue(tf.getName()) != null).map(item -> {
-							return String.join(Constants.OPERATOR_EQUALS, item.getKey(),
-									item.fetchValue(tf.getName()).trim());
-						}).collect(Collectors.joining(System.getProperty(Constants.LINE_SEPARATOR)))
+						.filter(item -> item != null && item.fetchValue(tf.getName()) != null)
+						.map(item -> String.join(Constants.OPERATOR_EQUALS, item.getKey(),
+								item.fetchValue(tf.getName()).trim()))
+						.collect(Collectors.joining(System.getProperty(Constants.LINE_SEPARATOR)))
 						+ System.getProperty(Constants.LINE_SEPARATOR);
 				try (OutputStreamWriter output = new OutputStreamWriter(new FileOutputStream(new File(tf.getPath())),
 						StandardCharsets.UTF_8)) {
