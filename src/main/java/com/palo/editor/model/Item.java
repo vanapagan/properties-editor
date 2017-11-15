@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.palo.util.Constants;
 import com.palo.util.PreferencesSingleton;
 
 public class Item implements Comparable<Item> {
@@ -63,11 +64,15 @@ public class Item implements Comparable<Item> {
 
 	@Override
 	public int compareTo(Item anotherItem) {
-		return this.key.toLowerCase().compareToIgnoreCase(anotherItem.getKey().toLowerCase());
+		return key.toLowerCase().compareToIgnoreCase(anotherItem.getKey().toLowerCase());
 	}
 
 	public Map<String, String> getValuesMap() {
 		return valuesMap;
+	}
+
+	public String getKeyValuePair(String language) {
+		return String.join(Constants.OPERATOR_EQUALS, getKey(), fetchValue(language).trim());
 	}
 
 }

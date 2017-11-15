@@ -18,6 +18,7 @@ public class PreferencesSingleton {
 	private static PreferencesSingleton INSTANCE = new PreferencesSingleton();
 	private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss dd-MM-yyyy");
 	private List<TranslationFile> translationFiles = new ArrayList<>();
+	private boolean addTrailingNewLine = true;
 
 	private PreferencesSingleton() {
 	}
@@ -40,6 +41,14 @@ public class PreferencesSingleton {
 
 	public void setTranslationFiles(List<TranslationFile> translationFiles) {
 		this.translationFiles = translationFiles;
+	}
+
+	public boolean isAddTrailingNewLine() {
+		return addTrailingNewLine;
+	}
+
+	public void setAddTrailingNewLine(boolean addTrailingNewLine) {
+		this.addTrailingNewLine = addTrailingNewLine;
 	}
 
 	public void removeFile(String key) {
@@ -70,5 +79,17 @@ public class PreferencesSingleton {
 	public static String localDateTimeToString(LocalDateTime ldt) {
 		return ldt.format(formatter);
 	}
-
+	
+	public String applyUserPreferences(String fileContent) {
+		return String.join("", getFilePrefix(), fileContent, getFileSuffix());
+	}
+	
+	private String getFilePrefix() {
+		return "";
+	}
+	
+	private String getFileSuffix() {
+		return addTrailingNewLine ? System.getProperty(Constants.LINE_SEPARATOR) : "";
+	}
+	
 }
