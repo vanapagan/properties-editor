@@ -3,6 +3,7 @@ package com.palo.editor;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -75,7 +76,7 @@ public class MainApp extends Application {
 		showRootLayout();
 		showEditor();
 	}
-	
+
 	private void initActivityMonitoring() {
 		actionsList = FXCollections.observableList(new ArrayList<>());
 		activityProperty = new SimpleStringProperty();
@@ -98,11 +99,17 @@ public class MainApp extends Application {
 				JSONObject jsonObj = (JSONObject) jsonArr.get(i);
 				if (jsonObj != null) {
 					String filename = jsonObj.getString(Constants.PREFERENCES_FILENAME);
+					String encoding = jsonObj.getString(Constants.PREFERENCES_ENCODING);
 					String path = jsonObj.getString(Constants.PREFERENCES_PATH);
-					PreferencesSingleton.getInstace().addFileHolder(new TranslationFile(filename, path));
+					PreferencesSingleton.getInstace().addTranslationFile(
+							new TranslationFile(filename, mapEncodingNameToCharset(encoding), path));
 				}
 			}
 		}
+	}
+
+	private Charset mapEncodingNameToCharset(String name) {
+		return Charset.availableCharsets().get(name);
 	}
 
 	public Map<String, Item> mapProperties() {
@@ -144,8 +151,8 @@ public class MainApp extends Application {
 	public void showEditor() throws IOException {
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(MainApp.class.getResource(Constants.VIEW_EDITOR));
-		AnchorPane personOverview = loader.load();
-		rootLayout.setCenter(personOverview);
+		AnchorPane editorPane = loader.load();
+		rootLayout.setCenter(editorPane);
 		EditorController controller = loader.getController();
 		controller.setMainApp(this);
 	}
@@ -212,7 +219,7 @@ public class MainApp extends Application {
 
 		return controller.isOkSelection();
 	}
-	
+
 	public boolean showActivityDialog() throws IOException {
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(MainApp.class.getResource(Constants.VIEW_ACTIVITY_DIALOG));
@@ -267,7 +274,7 @@ public class MainApp extends Application {
 		unsavedChangesStack.push(a);
 		addNewIdempotentAction(a);
 	}
-	
+
 	public void addNewIdempotentAction(Action a) {
 		actionsList.add(a);
 		setActivityPropertyText(a);
@@ -278,7 +285,7 @@ public class MainApp extends Application {
 		String title = anyUnsavedChanges() ? Constants.TITLE_APP + Constants.ASTERISK : Constants.TITLE_APP;
 		primaryStage.setTitle(title);
 	}
-	
+
 	public boolean anyUnsavedChanges() {
 		return !unsavedChangesStack.isEmpty();
 	}

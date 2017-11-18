@@ -6,6 +6,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import com.palo.editor.model.TranslationFile;
 import com.palo.util.Constants;
 import com.palo.util.PreferencesSingleton;
@@ -48,16 +50,12 @@ public class OpenDialogController {
 		fileChooser.setSelectedExtensionFilter(extFilter);
 		List<File> selectedFilesList = fileChooser.showOpenMultipleDialog(dialogStage);
 		if (selectedFilesList == null) {
-			pathLabel.setText(Constants.OPEN_DIALOG_NO_DIR_SELECTED);
+			pathLabel.setText(Constants.OPEN_DIALOG_NO_FILES_SELECTED);
 		} else {
-			PreferencesSingleton.getInstace().truncateAll();
-			selectedFilesList.stream().forEach(f -> addNewFileHolder(f));
+			mapSelectedFiles(selectedFilesList);
 			pathLabel.setText(selectedFilesList.size() + " " + Constants.OPEN_DIALOG_FILES_SELECTED);
-			okSelection = true;
-			PreferencesSingleton.getInstace().saveUserPreferences();
-			dialogStage.close();
+			closeDialog();
 		}
-
 	}
 
 	@FXML
@@ -67,26 +65,41 @@ public class OpenDialogController {
 		if (selectedDirectory == null) {
 			pathLabel.setText(Constants.OPEN_DIALOG_NO_DIR_SELECTED);
 		} else {
-			PreferencesSingleton.getInstace().truncateAll();
-			Path path = Paths.get(selectedDirectory.getAbsolutePath());
-			Files.list(path).filter(f -> f.toString().endsWith(Constants.EXTENSION_PROPERTIES)).forEach(filepath -> {
-				addNewFile(filepath);
-			});
+			mapSelectedDirectory(selectedDirectory);
 			pathLabel.setText(selectedDirectory.getAbsolutePath());
-			okSelection = true;
-			PreferencesSingleton.getInstace().saveUserPreferences();
-			dialogStage.close();
+			closeDialog();
 		}
 	}
 
-	private void addNewFileHolder(File file) {
-		addNewFile(Paths.get(file.getAbsolutePath()));
+	private List<TranslationFile> mapSelectedFiles(List<File> selectedFilesList) {
+		return addTranslationFiles(selectedFilesList.stream().map(f -> {
+			Path filepath = Paths.get(f.getAbsolutePath());
+			String name = filepath.getFileName().toString().replace(Constants.EXTENSION_PROPERTIES, "");
+			String pathLiteral = filepath.toString();
+			return new TranslationFile(name, PreferencesSingleton.getInstace().getEncoding(), pathLiteral);
+		}).collect(Collectors.toList()));
 	}
 
-	private void addNewFile(Path filepath) {
-		String name = filepath.getFileName().toString().replace(Constants.EXTENSION_PROPERTIES, "");
-		String pathLiteral = filepath.toString();
-		PreferencesSingleton.getInstace().addFileHolder(new TranslationFile(name, pathLiteral));
+	private List<TranslationFile> mapSelectedDirectory(File selectedDirectory) throws IOException {
+		Path path = Paths.get(selectedDirectory.getAbsolutePath());
+		return addTranslationFiles(
+				Files.list(path).filter(p -> p.toString().endsWith(Constants.EXTENSION_PROPERTIES)).map(filepath -> {
+					String name = filepath.getFileName().toString().replace(Constants.EXTENSION_PROPERTIES, "");
+					String pathLiteral = filepath.toString();
+					return new TranslationFile(name, PreferencesSingleton.getInstace().getEncoding(), pathLiteral);
+				}).collect(Collectors.toList()));
+	}
+
+	private List<TranslationFile> addTranslationFiles(List<TranslationFile> list) {
+		PreferencesSingleton.getInstace().truncateAll();
+		PreferencesSingleton.getInstace().addTranslationFiles(list);
+		return list;
+	}
+
+	private void closeDialog() throws IOException {
+		okSelection = true;
+		PreferencesSingleton.getInstace().saveUserPreferences();
+		dialogStage.close();
 	}
 
 	public boolean isOkSelection() {

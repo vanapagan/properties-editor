@@ -52,8 +52,7 @@ public class RootLayoutController {
 	private void handleOpenDialog() throws IOException {
 		boolean okClicked = mainApp.showOpenDialog();
 		if (okClicked) {
-			mainApp.setItems(FXCollections.observableArrayList(mainApp.mapProperties().values()));
-			mainApp.showEditor();
+			reload();
 		}
 	}
 
@@ -103,19 +102,42 @@ public class RootLayoutController {
 
 		RemoveLanguageDialogController controller = loader.getController();
 		controller.setDialogStage(dialogStage);
-		controller.setMainApp(mainApp);
 
 		dialogStage.showAndWait();
 	}
 
 	@FXML
-	private void handlePreferencesDialog() {
+	private void handleShowPreferencesDialog() throws IOException {
+		FXMLLoader loader = new FXMLLoader();
+		loader.setLocation(MainApp.class.getResource(Constants.VIEW_PREFERENCES_DIALOG));
+		AnchorPane page = loader.load();
 
+		Stage dialogStage = new Stage();
+		dialogStage.setTitle(Constants.TITLE_PREFERENCES);
+		dialogStage.initModality(Modality.WINDOW_MODAL);
+		dialogStage.initOwner(mainApp.getPrimaryStage());
+		Scene scene = new Scene(page);
+		dialogStage.setScene(scene);
+
+		PreferencesDialogController controller = loader.getController();
+		controller.setDialogStage(dialogStage);
+
+		dialogStage.showAndWait();
+		
+		if (controller.reloadNeeded()) {
+			reload();
+		}
+		
 	}
 
 	@FXML
 	private void handleAboutDialog() {
 
+	}
+	
+	private void reload() throws IOException {
+		mainApp.setItems(FXCollections.observableArrayList(mainApp.mapProperties().values()));
+		mainApp.showEditor();
 	}
 
 	public void setMainApp(MainApp mainApp) {

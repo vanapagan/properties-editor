@@ -2,6 +2,7 @@ package com.palo.util;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ public class PreferencesSingleton {
 	private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss dd-MM-yyyy");
 	private List<TranslationFile> translationFiles = new ArrayList<>();
 	private boolean addTrailingNewLine = true;
+	private Charset encoding;
 
 	private PreferencesSingleton() {
 	}
@@ -27,8 +29,12 @@ public class PreferencesSingleton {
 		return INSTANCE;
 	}
 
-	public boolean addFileHolder(TranslationFile translationFile) {
+	public boolean addTranslationFile(TranslationFile translationFile) {
 		return translationFiles.add(translationFile);
+	}
+	
+	public boolean addTranslationFiles(List<TranslationFile> list) {
+		return translationFiles.addAll(list);
 	}
 
 	public TranslationFile getTranslationFile(String name) {
@@ -51,11 +57,20 @@ public class PreferencesSingleton {
 		this.addTrailingNewLine = addTrailingNewLine;
 	}
 
+	public Charset getEncoding() {
+		return encoding != null ? encoding : Constants.DEFAULT_ENCODING;
+	}
+
+	public void setEncoding(Charset encoding) {
+		this.encoding = encoding;
+	}
+
 	public void removeFile(String key) {
 		setTranslationFiles(translationFiles.stream().filter(t -> !t.getName().equals(key)).collect(Collectors.toList()));
 	}
 
 	public void truncateAll() {
+		setEncoding(Constants.DEFAULT_ENCODING);
 		translationFiles.clear();
 	}
 
@@ -70,6 +85,7 @@ public class PreferencesSingleton {
 		PreferencesSingleton.getInstace().getTranslationFiles().stream().forEach(tf -> {
 			JSONObject jsonObj = new JSONObject();
 			jsonObj.put(Constants.PREFERENCES_FILENAME, tf.getName());
+			jsonObj.put(Constants.PREFERENCES_ENCODING, tf.getEncoding().name());
 			jsonObj.put(Constants.PREFERENCES_PATH, tf.getPath());
 			jsonArr.put(jsonObj);
 		});

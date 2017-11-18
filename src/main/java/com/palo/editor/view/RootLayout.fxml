@@ -31,7 +31,7 @@
             </Menu>
             <Menu mnemonicParsing="false" text="Window">
               <items>
-                <MenuItem fx:id="preferencesMenuItem" mnemonicParsing="false" onAction="#handlePreferencesDialog" text="Preferences" />
+                <MenuItem fx:id="preferencesMenuItem" mnemonicParsing="false" onAction="#handleShowPreferencesDialog" text="Preferences" />
               </items>
             </Menu>
             <Menu mnemonicParsing="false" text="Help">
