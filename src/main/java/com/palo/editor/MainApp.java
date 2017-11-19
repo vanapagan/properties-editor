@@ -91,7 +91,7 @@ public class MainApp extends Application {
 	private void initPreferences() throws IOException {
 		File prefFile = new File(Constants.PREFERENCES_FILE_LOCATION);
 		if (!prefFile.exists()) {
-			showOpenDialog();
+			showOpenDialog(Constants.TITLE_OPEN, true);
 		} else {
 			JSONTokener tokener = new JSONTokener(new FileReader(Constants.PREFERENCES_FILE_LOCATION));
 			JSONArray jsonArr = new JSONArray(tokener);
@@ -200,13 +200,13 @@ public class MainApp extends Application {
 		return controller.isOkClicked();
 	}
 
-	public boolean showOpenDialog() throws IOException {
+	public boolean showOpenDialog(String title, boolean truncate) throws IOException {
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(MainApp.class.getResource(Constants.VIEW_OPEN_DIALOG));
 		AnchorPane page = loader.load();
 
 		Stage dialogStage = new Stage();
-		dialogStage.setTitle(Constants.TITLE_OPEN);
+		dialogStage.setTitle(title);
 		dialogStage.initModality(Modality.WINDOW_MODAL);
 		dialogStage.initOwner(primaryStage);
 		Scene scene = new Scene(page);
@@ -214,6 +214,7 @@ public class MainApp extends Application {
 
 		OpenDialogController controller = loader.getController();
 		controller.setDialogStage(dialogStage);
+		controller.setTruncate(truncate);
 
 		dialogStage.showAndWait();
 

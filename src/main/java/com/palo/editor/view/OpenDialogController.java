@@ -33,7 +33,9 @@ public class OpenDialogController {
 
 	private Stage dialogStage;
 
-	private boolean okSelection = false;
+	private boolean okSelection;
+	
+	private boolean truncate;
 
 	@FXML
 	private void initialize() {
@@ -41,6 +43,10 @@ public class OpenDialogController {
 
 	public void setDialogStage(Stage dialogStage) {
 		this.dialogStage = dialogStage;
+	}
+
+	public void setTruncate(boolean truncate) {
+		this.truncate = truncate;
 	}
 
 	@FXML
@@ -91,8 +97,12 @@ public class OpenDialogController {
 	}
 
 	private List<TranslationFile> addTranslationFiles(List<TranslationFile> list) {
-		PreferencesSingleton.getInstace().truncateAll();
-		PreferencesSingleton.getInstace().addTranslationFiles(list);
+		PreferencesSingleton pref = PreferencesSingleton.getInstace();
+		if (truncate) {
+			pref.truncateAddTranslationFiles(list);
+		} else {
+			pref.addTranslationFiles(list);
+		}
 		return list;
 	}
 

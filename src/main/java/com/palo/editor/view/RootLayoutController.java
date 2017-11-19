@@ -50,7 +50,7 @@ public class RootLayoutController {
 
 	@FXML
 	private void handleOpenDialog() throws IOException {
-		boolean okClicked = mainApp.showOpenDialog();
+		boolean okClicked = mainApp.showOpenDialog(Constants.TITLE_OPEN, true);
 		if (okClicked) {
 			reload();
 		}
@@ -84,8 +84,11 @@ public class RootLayoutController {
 	}
 
 	@FXML
-	private void handleAddLanguage() {
-
+	private void handleAddLanguages() throws IOException {
+		boolean okClicked = mainApp.showOpenDialog(Constants.TITLE_ADD, false);
+		if (okClicked) {
+			reload();
+		}
 	}
 
 	@FXML
@@ -102,6 +105,7 @@ public class RootLayoutController {
 
 		RemoveLanguageDialogController controller = loader.getController();
 		controller.setDialogStage(dialogStage);
+		controller.setMainApp(mainApp);
 
 		dialogStage.showAndWait();
 	}

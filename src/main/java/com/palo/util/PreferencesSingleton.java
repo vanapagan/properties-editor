@@ -32,8 +32,15 @@ public class PreferencesSingleton {
 	public boolean addTranslationFile(TranslationFile translationFile) {
 		return translationFiles.add(translationFile);
 	}
-	
+
+	public boolean truncateAddTranslationFiles(List<TranslationFile> list) {
+		truncateAll();
+		return addTranslationFiles(list);
+	}
+
 	public boolean addTranslationFiles(List<TranslationFile> list) {
+		list = list.stream().filter(lf -> translationFiles.stream()
+				.noneMatch(tf -> lf.getName().equals(tf.getName()))).collect(Collectors.toList());
 		return translationFiles.addAll(list);
 	}
 
@@ -66,7 +73,8 @@ public class PreferencesSingleton {
 	}
 
 	public void removeFile(String key) {
-		setTranslationFiles(translationFiles.stream().filter(t -> !t.getName().equals(key)).collect(Collectors.toList()));
+		setTranslationFiles(
+				translationFiles.stream().filter(t -> !t.getName().equals(key)).collect(Collectors.toList()));
 	}
 
 	public void truncateAll() {
@@ -91,21 +99,21 @@ public class PreferencesSingleton {
 		});
 		return jsonArr.toString();
 	}
-	
+
 	public static String localDateTimeToString(LocalDateTime ldt) {
 		return ldt.format(formatter);
 	}
-	
+
 	public String applyUserPreferences(String fileContent) {
 		return String.join("", getFilePrefix(), fileContent, getFileSuffix());
 	}
-	
+
 	private String getFilePrefix() {
 		return "";
 	}
-	
+
 	private String getFileSuffix() {
 		return addTrailingNewLine ? System.getProperty(Constants.LINE_SEPARATOR) : "";
 	}
-	
+
 }

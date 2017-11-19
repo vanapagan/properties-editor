@@ -9,6 +9,7 @@ public class Constants {
 	public static final String TITLE_OPEN = "Open files";
 	public static final String TITLE_ACTIVITY = "Latest activity";
 	public static final String TITLE_PREFERENCES = "Preferences";
+	public static final String TITLE_ADD = "Add languages";
 	
 	public static final String PREFERENCES_FILENAME = "filename";
 	public static final String PREFERENCES_ENCODING = "encoding";

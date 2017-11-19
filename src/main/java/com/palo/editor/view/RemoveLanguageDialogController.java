@@ -23,7 +23,7 @@ public class RemoveLanguageDialogController {
 	@FXML
 	private Button cancelButton;
 
-	private boolean okClicked = false;
+	private boolean okClicked;
 
 	private Stage dialogStage;
 
@@ -34,6 +34,9 @@ public class RemoveLanguageDialogController {
 
 	@FXML
 	private void initialize() {
+		PreferencesSingleton.getInstace().getTranslationFiles().stream().forEach(tf -> {
+			languageCombo.getItems().add(tf.getName());
+		});
 	}
 
 	@FXML
@@ -68,9 +71,6 @@ public class RemoveLanguageDialogController {
 
 	public void setMainApp(MainApp mainApp) {
 		this.mainApp = mainApp;
-		PreferencesSingleton.getInstace().getTranslationFiles().stream().forEach(tf -> {
-			languageCombo.getItems().add(tf.getName());
-		});
 	}
 
 	public boolean isOkClicked() {
