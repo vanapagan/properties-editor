@@ -9,6 +9,7 @@ public class Constants {
 	public static final String TITLE_OPEN = "Open files";
 	public static final String TITLE_ACTIVITY = "Latest activity";
 	public static final String TITLE_PREFERENCES = "Preferences";
+	public static final String TITLE_ABOUT = "About";
 	public static final String TITLE_ADD = "Add languages";
 	
 	public static final String PREFERENCES_FILENAME = "filename";
@@ -25,6 +26,7 @@ public class Constants {
 	public static final String VIEW_ACTIVITY_DIALOG = VIEW + "/" + "ActivityDialog.fxml";
 	public static final String VIEW_REMOVE_LANGUAGE_DIALOG = VIEW + "/" + "RemoveLanguageDialog.fxml";
 	public static final String VIEW_PREFERENCES_DIALOG = VIEW + "/" + "PreferencesDialog.fxml";
+	public static final String VIEW_ABOUT_DIALOG = VIEW + "/" + "AboutDialog.fxml";
 	
 	public static final String PREFERENCES_FILE_LOCATION = "C:\\temp\\preferences.json";
 	

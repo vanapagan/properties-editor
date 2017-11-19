@@ -2,11 +2,13 @@ package com.palo.util;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 import org.json.JSONArray;
@@ -21,6 +23,7 @@ public class PreferencesSingleton {
 	private List<TranslationFile> translationFiles = new ArrayList<>();
 	private boolean addTrailingNewLine = true;
 	private Charset encoding;
+	private Properties properties;
 
 	private PreferencesSingleton() {
 	}
@@ -70,6 +73,35 @@ public class PreferencesSingleton {
 
 	public void setEncoding(Charset encoding) {
 		this.encoding = encoding;
+	}
+
+	public Properties getProperties() throws IOException {
+		return properties != null ? properties : loadProperties();
+	}
+
+	private Properties loadProperties() throws IOException {
+		InputStream input = null;
+		Properties prop = new Properties();
+		try {
+			input = this.getClass().getResourceAsStream("/version.properties");
+			prop.load(input);
+		} catch (IOException ex) {
+			throw ex;
+		} finally {
+			if (input != null) {
+				try {
+					input.close();
+				} catch (IOException e) {
+					throw e;
+				}
+			}
+		}
+		setProperties(prop);
+		return prop;
+	}
+
+	public void setProperties(Properties prop) {
+		this.properties = prop;
 	}
 
 	public void removeFile(String key) {

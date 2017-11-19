@@ -3,7 +3,19 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.palo</groupId>
 	<artifactId>properties-editor</artifactId>
+	<name>Properties Editor</name>
 	<version>0.0.1-SNAPSHOT</version>
+	<developers>
+		<developer>
+			<id>kristopalo</id>
+			<name>Kristo Palo</name>
+			<email>kristopalo@hotmail.com</email>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>Europe/Tallinn</timezone>
+		</developer>
+	</developers>
 	<build>
 		<plugins>
 			<plugin>
@@ -23,6 +35,15 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<resources>
+			<resource>
+				<directory>src/main/resources/com/palo/util</directory>
+				<includes>
+					<include>version.properties</include>
+				</includes>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
 	</build>
 	<dependencies>
 		<dependency>

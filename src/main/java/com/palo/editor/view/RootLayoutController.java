@@ -135,8 +135,22 @@ public class RootLayoutController {
 	}
 
 	@FXML
-	private void handleAboutDialog() {
+	private void handleShowAboutDialog() throws IOException {
+		FXMLLoader loader = new FXMLLoader();
+		loader.setLocation(MainApp.class.getResource(Constants.VIEW_ABOUT_DIALOG));
+		AnchorPane page = loader.load();
 
+		Stage dialogStage = new Stage();
+		dialogStage.initModality(Modality.WINDOW_MODAL);
+		dialogStage.setTitle(Constants.TITLE_ABOUT);
+		dialogStage.initOwner(mainApp.getPrimaryStage());
+		Scene scene = new Scene(page);
+		dialogStage.setScene(scene);
+
+		AboutDialogController controller = loader.getController();
+		controller.setDialogStage(dialogStage);
+
+		dialogStage.showAndWait();
 	}
 	
 	private void reload() throws IOException {
